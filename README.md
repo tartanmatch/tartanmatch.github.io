@@ -7,8 +7,8 @@ Static project website for **TartanMatch: Towards Universal Dense Matching Acros
 Requires Node.js 18 or later. No npm dependency installation is needed. The repository is public and can be cloned without signing in.
 
 ```bash
-git clone https://github.com/Caijiting/tartanmatch-website.git
-cd tartanmatch-website
+git clone https://github.com/tartanmatch/tartanmatch.github.io.git
+cd tartanmatch.github.io
 npm run dev
 ```
 
@@ -48,7 +48,7 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 npm run build
 ```
 
-This creates a standalone `dist/` directory suitable for static hosting, including GitHub Pages. The production site is hosted on GitHub Pages at https://caijiting.github.io/tartanmatch-website/.
+This creates a standalone `dist/` directory suitable for static hosting, including GitHub Pages. The production site is hosted on GitHub Pages at https://tartanmatch.github.io/.
 
 The repository includes all assets required to run and build the website. Original presentations, the root-level paper copy, `.work/`, and `dist/` are excluded from version control. To regenerate assets, place the original source files in the project root.
 
@@ -56,7 +56,7 @@ The repository includes all assets required to run and build the website. Origin
 
 The `gh-pages` branch contains only the built website and a `.nojekyll` file. In repository settings, enable **Pages → Deploy from a branch**, select **gh-pages**, and use the root directory (`/`). GitHub publishes updates pushed to this branch.
 
-Live website: https://caijiting.github.io/tartanmatch-website/.
+Live website: https://tartanmatch.github.io/.
 
 To update the site, run `npm run build`, copy the contents of `dist/` into a checkout of `gh-pages`, preserve `.nojekyll`, then commit and push that branch.
 
