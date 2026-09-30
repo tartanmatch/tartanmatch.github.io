@@ -82,7 +82,7 @@
         <p>Given a <em>source</em> image and a <em>target</em> image from any two of the five sensors, TartanMatch predicts where every source pixel appears in the target, and whether that point is visible in both views. Moving the source pixels to their predicted locations should reproduce the target’s layout while keeping the source’s appearance.</p>
       </div>
       <figure class="example">
-        <div class="example-picker" role="radiogroup" aria-label="Example sensor pair">
+        <div class="example-picker choice-group" role="radiogroup" aria-label="Example sensor pair">
           <button type="button" role="radio" aria-checked="true" data-example="rgb-event">RGB to Event</button>
           <button type="button" role="radio" aria-checked="false" data-example="rgb-depth" tabindex="-1">RGB to Depth</button>
           <button type="button" role="radio" aria-checked="false" data-example="thermal-event" tabindex="-1">Thermal to Event</button>
@@ -108,8 +108,8 @@
             <a class="finding-link" href="#demos">Try every pair in the demo</a>
           </div>
           <figure class="mini-chart">
-            <figcaption>Source (rows) and target (columns)</figcaption>
-            <div id="mini-tartan" class="mini-tartan" role="img" aria-label="A 5 by 5 grid of source and target sensors. All 25 pairs are handled by one model."></div>
+            <figcaption>Source (rows) and target (columns). Click a cell to watch that pair in the demo.</figcaption>
+            <div id="mini-tartan" class="mini-tartan" role="group" aria-label="All 25 source and target pairs, each linking to its demo"></div>
           </figure>
         </li>
         <li class="finding">
@@ -179,32 +179,42 @@
   <div class="container">
     <div class="section-intro rail">
       <h2>Interactive demos</h2>
-      <p>Each video has three panels: the source image stays fixed, the target sequence moves, and the right panel shows the source moved into the current target view. When matching works, the right panel lines up with the middle one.</p>
+      <p>Both demos show the same idea: a fixed source image is moved into the view of a moving target using the predicted matches. When matching works, the moved source lines up with the target.</p>
     </div>
-    <div class="tabs" role="tablist" aria-label="Demo type">
-      <button id="tab-explorer" role="tab" aria-selected="true" aria-controls="panel-explorer" data-demo-tab="explorer">All 25 sensor pairs</button>
-      <button id="tab-real" role="tab" aria-selected="false" aria-controls="panel-real" data-demo-tab="real" tabindex="-1">Real-world comparison</button>
+    <div class="demo-switch">
+      <p class="demo-switch-label" id="demo-switch-label">Choose a demo</p>
+      <div class="demo-options" role="tablist" aria-labelledby="demo-switch-label">
+        <button id="tab-explorer" type="button" role="tab" aria-selected="true" aria-controls="panel-explorer" data-demo-tab="explorer"><b>All 25 sensor pairs</b><span>Pick any source and target sensor. Synthetic data.</span></button>
+        <button id="tab-real" type="button" role="tab" aria-selected="false" aria-controls="panel-real" data-demo-tab="real" tabindex="-1"><b>Real-world comparison</b><span>TartanMatch against MatchAnything and MINIMA on real sensors.</span></button>
+      </div>
     </div>
 
     <div id="panel-explorer" role="tabpanel" aria-labelledby="tab-explorer">
       <div class="explorer">
         <div class="tartan">
-          <p class="tartan-help">Pick a source (row) and a target (column).</p>
+          <p class="tartan-help"><b>Click a cell to play that pair.</b> Rows are the source sensor, columns the target.</p>
           <div id="pair-matrix" class="pair-matrix" role="group" aria-label="Source and target sensor selector"></div>
         </div>
         <figure class="viewer">
           <h3 id="pair-title" class="pair-title"></h3>
           <div id="pair-labels" class="triptych-labels"></div>
           <video id="pair-video" class="demo-video" controls muted loop playsinline preload="metadata" poster="assets/pair-rgb-event.webp" src="assets/pair-rgb-event.mp4"></video>
-          <figcaption>Synthetic sequences from TartanAir V2. Use the arrow keys to move through the grid.</figcaption>
+          <figcaption>Synthetic sequences from TartanAir V2. You can also move through the grid with the arrow keys.</figcaption>
         </figure>
       </div>
     </div>
 
     <div id="panel-real" role="tabpanel" aria-labelledby="tab-real" hidden>
       <div class="comparison-toolbar">
-        <label for="real-pair">Sensor pair</label>
-        <select id="real-pair"><option value="event-lidar">Event to LiDAR</option><option value="event-event">Event to Event</option><option value="event-rgb">Event to RGB</option><option value="rgb-lidar">RGB to LiDAR</option><option value="thermal-event">Thermal to Event</option><option value="thermal-lidar">Thermal to LiDAR</option></select>
+        <p class="toolbar-label" id="real-pair-label">Sensor pair</p>
+        <div id="real-pair" class="choice-group" role="radiogroup" aria-labelledby="real-pair-label">
+          <button type="button" role="radio" aria-checked="true" data-pair="event-lidar">Event → LiDAR</button>
+          <button type="button" role="radio" aria-checked="false" data-pair="event-event" tabindex="-1">Event → Event</button>
+          <button type="button" role="radio" aria-checked="false" data-pair="event-rgb" tabindex="-1">Event → RGB</button>
+          <button type="button" role="radio" aria-checked="false" data-pair="rgb-lidar" tabindex="-1">RGB → LiDAR</button>
+          <button type="button" role="radio" aria-checked="false" data-pair="thermal-event" tabindex="-1">Thermal → Event</button>
+          <button type="button" role="radio" aria-checked="false" data-pair="thermal-lidar" tabindex="-1">Thermal → LiDAR</button>
+        </div>
         <button id="real-play" class="button button-small" type="button">Pause</button>
       </div>
       <p class="comparison-guide">Real sensor data from DSERT-RoLL, not used in training. All three methods get the same two inputs. Each output moves the source into the target view, so the best output is the one that lines up most closely with the target.</p>

@@ -81,7 +81,6 @@ function warpLabels(source, target) {
 // Overview example: one pair at a time, source, target, and the warped source.
 const examplePicker = $('.example-picker');
 function showExample(button) {
-  $$('button', examplePicker).forEach(b => { b.setAttribute('aria-checked', String(b === button)); b.tabIndex = b === button ? 0 : -1; });
   const pair = button.dataset.example;
   const [source, target] = pair.split('-');
   const panels = $$('#example-panels > div');
@@ -91,30 +90,44 @@ function showExample(button) {
   Object.assign($('#example-target'), {src: `assets/intro-${pair}-target.webp`, alt: `Target ${modLabel(target)} image.`});
   Object.assign($('#example-warp'), {src: `assets/intro-${pair}-to-target.webp`, alt: `Source ${modLabel(source)} pixels moved to their predicted positions in the target view.`});
 }
-examplePicker.addEventListener('click', e => { const b = e.target.closest('button'); if (b) showExample(b); });
-examplePicker.addEventListener('keydown', e => {
-  const offset = {ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1}[e.key];
-  if (!offset) return;
-  e.preventDefault();
-  const buttons = $$('button', examplePicker);
-  const next = buttons[(buttons.indexOf(document.activeElement) + offset + buttons.length) % buttons.length];
-  next.focus(); showExample(next);
-});
+// Pill radio groups: click to choose, arrow keys to move between options.
+function setupChoiceGroup(group, onSelect) {
+  const buttons = $$('button', group);
+  const choose = button => {
+    buttons.forEach(b => { b.setAttribute('aria-checked', String(b === button)); b.tabIndex = b === button ? 0 : -1; });
+    onSelect(button);
+  };
+  group.addEventListener('click', e => { const b = e.target.closest('button'); if (b) choose(b); });
+  group.addEventListener('keydown', e => {
+    const offset = {ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1}[e.key];
+    if (!offset) return;
+    e.preventDefault();
+    const next = buttons[(buttons.indexOf(document.activeElement) + offset + buttons.length) % buttons.length];
+    next.focus(); choose(next);
+  });
+}
+setupChoiceGroup(examplePicker, showExample);
 
-// Key results: a static 5 x 5 grid showing that one model covers every pair.
-$('#mini-tartan').innerHTML = '<span></span>'
+// Key results: a 5 x 5 grid showing that one model covers every pair. Each cell opens that pair in the demo.
+const miniTartan = $('#mini-tartan');
+miniTartan.innerHTML = '<span></span>'
   + modalities.map(m => `<span class="axis-label" data-mod="${m.id}">${m.label}</span>`).join('')
   + modalities.map(source => `<span class="axis-label row" data-mod="${source.id}">${source.label}</span>`
-    + modalities.map(target => `<i class="pair-cell" style="--from:var(--mod-${source.id});--to:var(--mod-${target.id})"></i>`).join('')).join('');
+    + modalities.map(target => `<button class="pair-cell" type="button" style="--from:var(--mod-${source.id});--to:var(--mod-${target.id})" data-source="${source.id}" data-target="${target.id}" data-label="${source.label} → ${target.label}" aria-label="Watch ${source.label} to ${target.label} in the demo"></button>`).join('')).join('');
 
 // 25-pair explorer.
 const matrix = $('#pair-matrix');
 matrix.innerHTML = '<span class="axis-corner">Source ↓<br>Target →</span>'
-  + modalities.map(m => `<span class="axis-label" data-mod="${m.id}">${m.label}</span>`).join('')
-  + modalities.map((source, r) => `<span class="axis-label row" data-mod="${source.id}">${source.label}</span>`
-    + modalities.map((target, c) => `<button class="pair-cell" type="button" style="--from:var(--mod-${source.id});--to:var(--mod-${target.id})" data-source="${source.id}" data-target="${target.id}" data-index="${r * 5 + c}" aria-label="${source.label} to ${target.label}" aria-pressed="false" title="${source.label} to ${target.label}" tabindex="-1"></button>`).join('')).join('');
+  + modalities.map(m => `<span class="axis-label" data-mod="${m.id}" data-col="${m.id}">${m.label}</span>`).join('')
+  + modalities.map((source, r) => `<span class="axis-label row" data-mod="${source.id}" data-row="${source.id}">${source.label}</span>`
+    + modalities.map((target, c) => `<button class="pair-cell" type="button" style="--from:var(--mod-${source.id});--to:var(--mod-${target.id})" data-source="${source.id}" data-target="${target.id}" data-index="${r * 5 + c}" data-label="${source.label} → ${target.label}" aria-label="${source.label} to ${target.label}" aria-pressed="false" tabindex="-1"></button>`).join('')).join('');
+function markPair(button) {
+  $$('.pair-cell', matrix).forEach(cell => { cell.setAttribute('aria-pressed', String(cell === button)); cell.tabIndex = cell === button ? 0 : -1; });
+  $$('[data-row]', matrix).forEach(l => l.classList.toggle('is-active', l.dataset.row === button.dataset.source));
+  $$('[data-col]', matrix).forEach(l => l.classList.toggle('is-active', l.dataset.col === button.dataset.target));
+}
 function selectPair(button) {
-  $$('.pair-cell').forEach(cell => { cell.setAttribute('aria-pressed', String(cell === button)); cell.tabIndex = cell === button ? 0 : -1; });
+  markPair(button);
   const {source, target} = button.dataset;
   $('#pair-title').innerHTML = `${modName(source)}<span class="to">to</span>${modName(target)}`;
   $('#pair-labels').innerHTML = warpLabels(source, target);
@@ -133,17 +146,23 @@ matrix.addEventListener('keydown', e => {
   const offset = {ArrowRight: 1, ArrowLeft: -1, ArrowDown: 5, ArrowUp: -5}[e.key];
   if (!offset) return;
   e.preventDefault();
-  const next = $$('.pair-cell')[(index + offset + 25) % 25];
+  const next = $$('.pair-cell', matrix)[(index + offset + 25) % 25];
   next.focus(); selectPair(next);
 });
 // Initial selection without reloading the video already in the markup.
 (() => {
-  const first = $('.pair-cell[data-source="rgb"][data-target="event"]');
-  $$('.pair-cell').forEach(cell => { cell.setAttribute('aria-pressed', String(cell === first)); cell.tabIndex = cell === first ? 0 : -1; });
+  markPair($('.pair-cell[data-source="rgb"][data-target="event"]', matrix));
   $('#pair-title').innerHTML = `${modName('rgb')}<span class="to">to</span>${modName('event')}`;
   $('#pair-labels').innerHTML = warpLabels('rgb', 'event');
   $('#pair-video').setAttribute('aria-label', 'Left: fixed RGB source. Middle: Event target sequence. Right: RGB source moved into each target view.');
 })();
+
+miniTartan.addEventListener('click', e => {
+  const cell = e.target.closest('.pair-cell'); if (!cell) return;
+  $('#tab-explorer').click();
+  selectPair($(`.pair-cell[data-source="${cell.dataset.source}"][data-target="${cell.dataset.target}"]`, matrix));
+  $('#demos').scrollIntoView({behavior: motionPreference.matches ? 'auto' : 'smooth'});
+});
 
 function setupTabs(selector, onSelect) {
   const buttons = $$(selector);
@@ -177,7 +196,7 @@ function updateRealClock() {
   $('#real-play').textContent = realClock.userPaused || paused ? 'Play' : 'Pause';
 }
 function renderComparison() {
-  const pair = $('#real-pair').value;
+  const pair = $('#real-pair [aria-checked=true]').dataset.pair;
   const [source, target] = pair.split('-');
   const video = id => `<video muted playsinline preload="auto" poster="assets/real-${pair}-${id}.webp" src="assets/real-${pair}-${id}.mp4"></video>`;
   const methods = [['ours', 'TartanMatch (ours)'], ['matchanything', 'MatchAnything (RoMa)'], ['minima', 'MINIMA (RoMa)']];
@@ -211,7 +230,7 @@ setupTabs('[data-demo-tab]', button => {
   updateRealClock();
   $$('video', $('#demos')).forEach(v => { if (v.closest('[hidden]')) v.pause(); else if (v.dataset.visible === 'true') playVideo(v); });
 });
-$('#real-pair').addEventListener('change', renderComparison);
+setupChoiceGroup($('#real-pair'), renderComparison);
 
 // Values transcribed from Tables II, III, and V of the supplied manuscript.
 const resultSets = {

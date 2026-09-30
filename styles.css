@@ -115,10 +115,11 @@ figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--t
 .sensor-row .mod-name{display:block;margin-top:8px;font-size:16px}
 
 .example{margin-top:32px}
-.example-picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-.example-picker button,.tabs button{font-family:var(--sans);font-size:16px;font-weight:600;padding:8px 16px;border:1.5px solid var(--rule-strong);border-radius:999px;color:var(--text)}
-.example-picker button:hover,.tabs button:hover{border-color:var(--ink);color:var(--ink)}
-.example-picker button[aria-checked=true],.tabs button[aria-selected=true]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.choice-group{display:flex;flex-wrap:wrap;gap:8px}
+.example-picker{margin-bottom:20px}
+.choice-group button,.tabs button{font-family:var(--sans);font-size:16px;font-weight:600;padding:8px 16px;border:1.5px solid var(--rule-strong);border-radius:999px;color:var(--text)}
+.choice-group button:hover,.tabs button:hover{border-color:var(--ink);color:var(--ink)}
+.choice-group button[aria-checked=true],.tabs button[aria-selected=true]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
 .example-panels{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .example-panels img{width:100%;aspect-ratio:4/3;object-fit:cover;border:1px solid var(--rule);border-radius:3px;background:#fff}
 .panel-label{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
@@ -145,7 +146,8 @@ figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--t
 .summary-bar:not(.ours) b{font-weight:400;color:var(--text)}
 .mini-tartan{display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr));gap:4px;align-items:center;max-width:360px}
 .mini-tartan .axis-label{font-size:13px;padding-bottom:2px}
-.mini-tartan .pair-cell{--weave:70%;cursor:default}
+.mini-tartan .pair-cell{--weave:70%}
+.mini-tartan .pair-cell:hover{--weave:100%}
 
 /* Joint training dumbbell chart. */
 .joint-chart{font-family:var(--sans);border-top:1px solid var(--rule);margin-top:4px}
@@ -173,6 +175,19 @@ figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--t
 /* 25-pair explorer. Each cell is a crossing of the source (row) and target (column) colors. */
 .explorer{display:grid;grid-template-columns:minmax(320px,380px) 1fr;gap:48px;align-items:start}
 .tartan-help{font-family:var(--sans);font-size:16px;color:var(--text);margin-bottom:14px}
+.tartan-help b{display:block;font-size:18px;color:var(--ink)}
+/* Demo switcher: two labeled options, one per demo. */
+.demo-switch{margin-bottom:36px}
+.demo-switch-label{font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);margin-bottom:10px}
+.demo-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:820px}
+.demo-options button{display:grid;align-content:start;gap:4px;text-align:left;padding:14px 18px 14px 46px;position:relative;font-family:var(--sans);border:1.5px solid var(--rule-strong);border-radius:8px;background:var(--paper);color:var(--text)}
+.demo-options button::before{content:'';position:absolute;left:18px;top:18px;width:16px;height:16px;border-radius:50%;border:2px solid var(--rule-strong);box-sizing:border-box}
+.demo-options button b{font-size:18px;color:var(--ink)}
+.demo-options button span{font-size:15px;line-height:1.4;color:var(--text-2)}
+.demo-options button:hover{border-color:var(--ink)}
+.demo-options button[aria-selected=true]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.demo-options button[aria-selected=true]::before{border:5px solid var(--ink)}
+.toolbar-label{font-weight:600;color:var(--ink)}
 .pair-matrix{display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr));gap:6px;align-items:center;font-family:var(--sans)}
 .axis-corner{font-size:14px;color:var(--text-2);line-height:1.25;align-self:end;padding-bottom:4px}
 .axis-label{font-size:14px;font-weight:700;color:var(--mod);text-align:center;padding-bottom:4px}
@@ -182,7 +197,15 @@ figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--t
     linear-gradient(90deg,transparent 36%,color-mix(in srgb,var(--to) var(--weave),transparent) 36% 64%,transparent 64%),
     linear-gradient(0deg,transparent 36%,color-mix(in srgb,var(--from) var(--weave),transparent) 36% 64%,transparent 64%);
   transition:transform .12s}
-.pair-cell:hover{--weave:75%}
+.pair-cell{position:relative;cursor:pointer}
+.pair-cell:hover{--weave:75%;border-color:var(--ink)}
+/* Pair name tooltip on hover and keyboard focus. */
+.pair-cell::after{content:attr(data-label);position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);z-index:5;white-space:nowrap;padding:4px 8px;border-radius:4px;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .1s}
+.pair-cell:hover::after,.pair-cell:focus-visible::after{opacity:1}
+.pair-cell[data-target=rgb]::after{left:0;transform:none}
+.pair-cell[data-target=depth]::after,.pair-cell[data-target=lidar]::after{left:auto;right:0;transform:none}
+@media (hover:none){.pair-cell::after{display:none}}
+.axis-label.is-active{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
 .pair-cell[aria-pressed=true]{--weave:100%;border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
 .viewer{min-width:0}
 .pair-title{font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:16px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
@@ -196,8 +219,6 @@ figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--t
 
 /* Real-world comparison */
 .comparison-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:var(--sans);font-size:16px;margin-bottom:14px}
-.comparison-toolbar label{font-weight:600;color:var(--ink)}
-.comparison-toolbar select{min-height:40px;padding:0 12px;border:1.5px solid var(--rule-strong);border-radius:6px;background:var(--paper);font-size:16px}
 .comparison-toolbar .button{margin-left:auto;min-width:88px;justify-content:center}
 .comparison-guide{font-family:var(--sans);font-size:16px;color:var(--text);max-width:80ch;margin-bottom:24px}
 /* Inputs once, then one output per method. Each panel crops one third of a source/target/output video. */
@@ -298,6 +319,7 @@ dialog img{display:block;width:100%;padding:24px}
   .tartan{max-width:420px}
   .method-list>div{grid-template-columns:1fr;gap:6px}
   .compare{grid-template-columns:minmax(0,1fr);gap:24px}
+  .demo-options{grid-template-columns:minmax(0,1fr)}
   .compare-outputs .panel-label{min-height:2.7em;align-items:flex-end;font-size:15px}
 }
 @media (max-width:760px){

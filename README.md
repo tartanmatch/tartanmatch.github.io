@@ -24,7 +24,7 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 
 - A title block (title, authors, affiliation, paper and BibTeX links) centered over the dimmed eight-pair warping video, with a caption below explaining the tiles.
 - The full paper abstract, then three short overview blocks: why cross-sensor matching matters (heavy-snow observations from four sensors), what TartanMatch predicts (a switchable source / target / warped-source example), and the key results written as full sentences.
-- A 5 × 5 source/target selector for all 25 ordered pairs. Each cell is drawn as the crossing of the source (row) and target (column) colors.
+- A "Choose a demo" switcher with two described options. The 25-pair demo uses a 5 × 5 source/target selector; each cell is drawn as the crossing of the source (row) and target (column) colors, names its pair on hover, and the active row and column labels are underlined. The small grid in Key results links each cell to the same pair in the demo. The real-world demo lists its six pairs as buttons.
 - Real-world DSERT-RoLL comparisons across six pairs. The source and target are shown once, followed by the outputs of TartanMatch, MatchAnything, and MINIMA side by side. Each panel crops one third of the original three-panel video, and a shared 10 fps clock steps every video to the same frame so they stay in sync.
 - An expandable architecture figure, sensor inputs, shared matcher, two-stage training, and the training data mixture.
 - Results in three labeled blocks: accuracy (cross-modal, same-modal, and relative-pose charts with exact values in a table), joint training (a per-pair chart of Table VII comparing one model per pair with the jointly trained model), and speed.
