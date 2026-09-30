@@ -11,7 +11,9 @@
   <link rel="preload" href="assets/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/atkinson-hyperlegible-next.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
-  <script>try{const t=localStorage.getItem('tm-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+  <script>try{const t=localStorage.getItem('tm-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+  /* Temporary: pick the title design to compare (?hero=panel or ?hero=overlay). */
+  document.documentElement.dataset.hero=new URLSearchParams(location.search).get('hero')==='overlay'?'overlay':'panel';</script>
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -25,26 +27,29 @@
 </header>
 
 <main>
-<section class="title-block" id="top">
-  <div class="container">
-    <h1>TartanMatch</h1>
-    <p class="subtitle">Towards Universal Dense Matching Across Modalities</p>
-    <p class="authors">
-      <span>Hyeokjoon Kwon<sup>*</sup></span>, <span>Jiting Cai<sup>*†</sup></span>, <span>Ruogu Li<sup>*</sup></span>, <span>Kritan Bhandari</span>, <span>Geethika Hemkumar</span>, <span>Parv Maheshwari</span>, <span>Yuheng Qiu</span>, <span>Yuchen Zhang</span>, <span>Sebastian Scherer</span>, <span>Wenshan Wang</span>
-    </p>
-    <p class="affiliation">Robotics Institute, Carnegie Mellon University</p>
-    <p class="author-note"><sup>*</sup> Equal contribution <span><sup>†</sup> Corresponding author</span></p>
-    <div class="links">
-      <a class="button button-primary" href="assets/tartanmatch-paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 3H6v18h12V7zM14 3v5h5M9 12h6M9 16h6"/></svg>Paper (PDF)</a>
-      <a class="button" href="#citation">BibTeX</a>
-      <a class="button" href="#demos">Interactive demos</a>
+<section class="hero" id="top">
+  <div class="hero-media">
+    <video id="teaser-video" muted loop playsinline preload="none" poster="assets/hero-warping.webp" data-src="assets/hero-warping.mp4" aria-label="Eight image pairs. For each, the two input images are shown on top, and below them each image is warped into the other's viewpoint using TartanMatch's predicted matches."></video>
+    <div class="hero-shade" aria-hidden="true"></div>
+  </div>
+  <div class="hero-text">
+    <div class="hero-card">
+      <h1>TartanMatch</h1>
+      <p class="subtitle">Towards Universal Dense Matching Across Modalities</p>
+      <p class="authors">
+        <span>Hyeokjoon Kwon<sup>*</sup></span>, <span>Jiting Cai<sup>*†</sup></span>, <span>Ruogu Li<sup>*</sup></span>, <span>Kritan Bhandari</span>, <span>Geethika Hemkumar</span>, <span>Parv Maheshwari</span>, <span>Yuheng Qiu</span>, <span>Yuchen Zhang</span>, <span>Sebastian Scherer</span>, <span>Wenshan Wang</span>
+      </p>
+      <p class="affiliation">Robotics Institute, Carnegie Mellon University</p>
+      <p class="author-note"><sup>*</sup> Equal contribution <span><sup>†</sup> Corresponding author</span></p>
+      <div class="links">
+        <a class="button button-primary" href="assets/tartanmatch-paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 3H6v18h12V7zM14 3v5h5M9 12h6M9 16h6"/></svg>Paper (PDF)</a>
+        <a class="button" href="#citation">BibTeX</a>
+        <a class="button" href="#demos">Interactive demos</a>
+      </div>
     </div>
   </div>
-  <figure class="teaser container">
-    <video id="teaser-video" muted loop playsinline preload="none" poster="assets/hero-warping.webp" data-src="assets/hero-warping.mp4" aria-label="Eight image pairs. For each, the two input images are shown on top, and below them each image is warped into the other's viewpoint using TartanMatch's predicted matches."></video>
-    <figcaption>Eight pairs of images from different sensors. In each tile, the top row shows the two inputs, and the bottom row shows each image moved into the other's viewpoint using the matches TartanMatch predicts.</figcaption>
-  </figure>
 </section>
+<p class="hero-caption container">Background: eight image pairs from different sensors. In each tile, the top row shows the two inputs, and the bottom row shows each image moved into the other's viewpoint using the matches TartanMatch predicts.</p>
 
 <section id="overview" class="section">
   <div class="container">
@@ -97,12 +102,31 @@
 
     <div class="overview-block rail findings">
       <h2>Key results</h2>
+      <div class="rail-body findings-body">
       <ul>
         <li>One network with a single set of weights handles <strong>all 25 ordered pairs</strong> of RGB, event, thermal, depth, and projected LiDAR.</li>
         <li>On real-sensor datasets never seen in training, its matches are off by <strong>61.9% fewer pixels</strong> on cross-modal pairs and <strong>49.6% fewer</strong> on same-modal pairs than the best competing method for each pair (average endpoint error).</li>
         <li>Training all pairs together is more accurate than training one model per pair, and the gain is largest on the hardest cross-modal pairs.</li>
         <li>It runs in <strong>27.8 ms</strong> per image pair on an H100 GPU, 7.4 times faster than MatchAnything (RoMa).</li>
       </ul>
+      <figure class="summary-chart">
+        <figcaption class="summary-title">Average matching error on real-sensor tests<small>Pixels between predicted and true match. Lower is better.</small></figcaption>
+        <div class="chart-legend"><span><i class="legend-ours"></i>TartanMatch</span><span><i class="legend-baseline"></i>Best other method</span></div>
+        <div class="summary-group" role="img" aria-label="Cross-modal, 9 tests: TartanMatch 9.50 pixels, best other method 24.94 pixels, 61.9% lower.">
+          <p class="summary-label">Cross-modal <span>9 tests</span></p>
+          <div class="summary-bar ours" style="--w:38.1%" title="TartanMatch: 9.50 px"><b>9.50</b></div>
+          <div class="summary-bar" style="--w:100%" title="Best other method: 24.94 px"><b>24.94</b></div>
+          <p class="summary-delta">61.9% lower error</p>
+        </div>
+        <div class="summary-group" role="img" aria-label="Same-modal, 9 tests: TartanMatch 3.08 pixels, best other method 6.12 pixels, 49.6% lower.">
+          <p class="summary-label">Same-modal <span>9 tests</span></p>
+          <div class="summary-bar ours" style="--w:12.35%" title="TartanMatch: 3.08 px"><b>3.08</b></div>
+          <div class="summary-bar" style="--w:24.53%" title="Best other method: 6.12 px"><b>6.12</b></div>
+          <p class="summary-delta">49.6% lower error</p>
+        </div>
+        <p class="summary-note">Mean endpoint error over the tests in Tables II and V. For each test, the comparison is the strongest other method on that test. Per-test values are in <a href="#results">Results</a>.</p>
+      </figure>
+      </div>
     </div>
   </div>
 </section>

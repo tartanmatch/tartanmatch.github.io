@@ -285,3 +285,20 @@ function setTeaserVideo() {
 portrait.addEventListener('change', setTeaserVideo);
 setTeaserVideo();
 observeVideos(); updateMotion();
+
+// Temporary: switcher for comparing the two title designs. Remove once one is chosen.
+(() => {
+  const root = document.documentElement;
+  const box = document.createElement('div');
+  box.className = 'hero-switch';
+  box.innerHTML = '<span>Title design</span><button type="button" data-hero-option="panel">Panel</button><button type="button" data-hero-option="overlay">Overlay</button>';
+  document.body.append(box);
+  const sync = () => $$('button', box).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.heroOption === root.dataset.hero)));
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    root.dataset.hero = b.dataset.heroOption;
+    const url = new URL(location.href); url.searchParams.set('hero', b.dataset.heroOption); history.replaceState(null, '', url);
+    sync();
+  });
+  sync();
+})();

@@ -81,18 +81,50 @@ sup{font-size:.62em;line-height:0}
 .button-primary:hover{opacity:.88}
 .button-small{min-height:38px;padding:0 14px;font-size:15px}
 
-/* Title block */
-.title-block{padding:72px 0 0}
-.title-block h1{font-size:clamp(52px,8vw,96px);line-height:1;letter-spacing:-.025em;font-weight:650;font-variation-settings:'opsz' 60}
-.subtitle{font-size:clamp(22px,2.6vw,32px);line-height:1.25;color:var(--ink);margin-top:14px;font-weight:400}
-.authors{margin-top:30px;max-width:62ch;font-size:19px;line-height:1.6;color:var(--ink)}
+/* Title block over the teaser video. Two designs under comparison:
+   panel = video undimmed, text on an opaque card at the lower left;
+   overlay = video dimmed, text centered on top of it. */
+.hero{position:relative;isolation:isolate}
+.hero-media video{display:block;width:100%;aspect-ratio:2/1;background:#1b1e24}
+.hero-shade{display:none}
+.hero h1{font-size:clamp(52px,6.4vw,84px);line-height:1;letter-spacing:-.025em;font-weight:650;font-variation-settings:'opsz' 60}
+.subtitle{font-size:clamp(21px,2.1vw,28px);line-height:1.25;color:var(--ink);margin-top:12px;font-weight:400}
+.authors{margin-top:22px;font-size:18px;line-height:1.55;color:var(--ink)}
 .authors span{white-space:nowrap}
-.affiliation{margin-top:6px;font-size:18px;color:var(--text)}
+.affiliation{margin-top:6px;font-size:17px;color:var(--text)}
 .author-note{margin-top:4px;font-family:var(--sans);font-size:15px;color:var(--text-2)}
 .author-note span{margin-left:18px}
-.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
-.teaser{margin-top:52px}
-.teaser video{width:100%;aspect-ratio:2/1;background:#1b1e24;border-radius:4px}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.hero-caption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--text-2);margin-top:16px;max-width:80ch}
+
+[data-hero=panel] .hero{padding-bottom:110px}
+[data-hero=panel] .hero-text{position:absolute;left:0;bottom:0;width:min(800px,62vw)}
+[data-hero=panel] .hero h1{font-size:clamp(48px,5vw,68px)}
+[data-hero=panel] .subtitle{font-size:clamp(20px,1.8vw,25px)}
+[data-hero=panel] .authors{font-size:17px;margin-top:16px}
+[data-hero=panel] .links{margin-top:18px}
+[data-hero=panel] .hero-card{background:var(--paper);padding:28px 40px 26px max(24px,calc((100vw - 1160px) / 2));border-top:1px solid var(--rule);border-right:1px solid var(--rule);border-radius:0 6px 0 0}
+[data-hero=panel] .hero-caption{padding-left:calc(min(800px,62vw) - max(24px,(100vw - 1160px) / 2) + 28px);margin-top:-98px;min-height:98px;font-size:15px;max-width:none}
+
+[data-hero=overlay] .hero{background:#0c0f14;color:#fff}
+[data-hero=overlay] .hero-media{position:relative}
+[data-hero=overlay] .hero-shade{display:block;position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(6,9,13,.78) 0%,rgba(6,9,13,.6) 45%,rgba(6,9,13,.38) 80%)}
+[data-hero=overlay] .hero-text{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px}
+[data-hero=overlay] .hero-card{max-width:900px;text-shadow:0 1px 6px #000,0 2px 18px rgba(0,0,0,.7)}
+[data-hero=overlay] .hero h1{color:#fff;font-size:clamp(56px,7.4vw,104px)}
+[data-hero=overlay] .subtitle,[data-hero=overlay] .authors{color:#fff}
+[data-hero=overlay] .affiliation{color:#eef0f4}
+[data-hero=overlay] .author-note{color:#dfe3ea}
+[data-hero=overlay] .links{justify-content:center}
+[data-hero=overlay] .button{text-shadow:none;background:rgba(12,15,20,.72);border-color:rgba(255,255,255,.55);color:#fff}
+[data-hero=overlay] .button-primary{background:#fff;border-color:#fff;color:#1c2230}
+
+/* Temporary switcher for comparing the two title designs. */
+.hero-switch{position:fixed;right:16px;bottom:16px;z-index:50;display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;font-family:var(--sans);font-size:15px;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.hero-switch span{font-weight:700;color:var(--ink);margin-right:4px}
+.hero-switch button{padding:5px 12px;border:1.5px solid var(--rule-strong);border-radius:999px;font-weight:600}
+.hero-switch button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+
 figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--text-2);margin-top:12px;max-width:80ch}
 
 /* Sections */
@@ -116,7 +148,22 @@ figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--t
 .panel-label{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .panel-output img{outline:2px solid var(--ink);outline-offset:2px}
 
-.findings ul{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 40px}
+.findings-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:48px;align-items:start}
+.findings ul{list-style:none;display:grid;gap:24px}
+.summary-chart{font-family:var(--sans);padding:22px 24px;border:1px solid var(--rule);border-radius:6px;background:var(--paper-alt)}
+.summary-title{margin:0 0 12px;color:var(--ink);font-weight:700;font-size:17px;line-height:1.35}
+.summary-title small{display:block;font-weight:400;font-size:15px;color:var(--text-2);margin-top:2px}
+.summary-group{margin-top:18px;padding-top:14px;border-top:1px solid var(--rule)}
+.summary-label{font-weight:700;color:var(--ink);font-size:16px;margin-bottom:8px}
+.summary-label span{font-weight:400;color:var(--text-2);margin-left:6px}
+.summary-bar{display:flex;align-items:center;gap:8px;height:20px;margin-top:2px}
+.summary-bar::before{content:'';display:block;height:18px;width:calc(var(--w) * .78);background:var(--baseline);border-radius:0 4px 4px 0}
+.summary-bar.ours::before{background:var(--ours)}
+.summary-bar b{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.summary-bar:not(.ours) b{font-weight:400;color:var(--text)}
+.summary-delta{margin-top:8px;font-size:16px;font-weight:700;color:var(--ink)}
+.summary-note{margin-top:18px;font-size:15px;line-height:1.5;color:var(--text-2)}
+.summary-note a{color:var(--ink)}
 .findings li{padding-left:20px;border-left:3px solid var(--rule-strong)}
 .findings li strong{white-space:nowrap}
 
@@ -192,7 +239,7 @@ figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--t
 .chart-row-label{font-size:16px;font-weight:600;color:var(--ink);line-height:1.3}
 .chart-row-label small{display:block;font-size:15px;font-weight:400;color:var(--text-2)}
 .bar-pair{display:grid;gap:4px}
-.result-bar{height:12px;width:var(--width);background:var(--baseline);border-radius:0 2px 2px 0}
+.result-bar{height:12px;width:var(--width);background:var(--baseline);border-radius:0 4px 4px 0}
 .result-bar.ours{background:var(--ours)}
 .chart-values{text-align:right;font-size:15px;line-height:16px;font-variant-numeric:tabular-nums;color:var(--text-2);display:grid;gap:0}
 .chart-values b{color:var(--ink)}
@@ -234,7 +281,12 @@ dialog img{display:block;width:100%;padding:24px}
 #toast.visible{opacity:1;transform:translate(-50%,0)}
 
 @media (max-width:980px){
-  .explorer,.results-layout,.data-body{grid-template-columns:minmax(0,1fr);gap:40px}
+  .explorer,.results-layout,.data-body,.findings-body{grid-template-columns:minmax(0,1fr);gap:40px}
+  .summary-chart{max-width:480px}
+  [data-hero=panel] .hero{padding-bottom:0}
+  [data-hero=panel] .hero-text{position:static;width:auto}
+  [data-hero=panel] .hero-card{padding:28px 24px 0;border:0}
+  [data-hero=panel] .hero-caption{padding-left:24px;margin-top:16px;min-height:0}
   .rail{grid-template-columns:minmax(0,1fr)}
   .rail>h2{margin-bottom:.6em}
   .rail>h3{margin-bottom:.5em}
@@ -250,9 +302,15 @@ dialog img{display:block;width:100%;padding:24px}
   .site-header nav{order:3;width:100%;gap:0;font-size:15px;overflow-x:auto;scrollbar-width:none;margin:0 -7px}
   .site-header nav a{padding:8px 7px;white-space:nowrap}
   html{scroll-padding-top:104px}
-  .title-block{padding-top:44px}
   .authors{font-size:17px}
-  .teaser video{aspect-ratio:1/2}
+  .hero-media video{aspect-ratio:1/2}
+  [data-hero=panel] .hero-media video{aspect-ratio:auto;height:62vh;object-fit:cover;object-position:top}
+  [data-hero=panel] .hero-card{padding:24px 16px 0}
+  [data-hero=panel] .hero-caption{padding-left:16px}
+  .hero-caption{font-size:15px}
+  [data-hero=overlay] .hero-text{padding:16px}
+  [data-hero=overlay] .authors{font-size:16px}
+  .hero-switch{font-size:14px;right:8px;bottom:8px}
   .section{padding:64px 0}
   .overview-block{margin-top:64px}
   .sensor-row{grid-template-columns:repeat(2,1fr)}
