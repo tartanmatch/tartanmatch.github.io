@@ -218,11 +218,14 @@
   <div class="container">
     <div class="section-intro rail">
       <h2>Results</h2>
-      <p>All numbers are zero-shot: the test datasets use real sensors and were not seen in training. Each comparison is against the strongest other method for that specific pair and dataset, including cases where TartanMatch is not the best.</p>
+      <p>We measure two things: how accurate the matches are, and how long the model takes. All accuracy tests are zero-shot: they use real sensor data from datasets not seen in training.</p>
     </div>
-    <div class="results-layout">
-      <div class="chart-panel">
-        <div class="tabs" role="tablist" aria-label="Result type">
+
+    <div class="result-block rail">
+      <h3>Accuracy<small>How close predicted matches are to the true ones</small></h3>
+      <div class="rail-body">
+        <p>Each row compares TartanMatch with the strongest other method on that specific pair and dataset, including the cases where TartanMatch is not the best.</p>
+        <div class="tabs" role="tablist" aria-label="Accuracy test">
           <button id="tab-cross" data-result-tab="cross" role="tab" aria-selected="true" aria-controls="results-panel">Cross-modal</button>
           <button id="tab-same" data-result-tab="same" role="tab" aria-selected="false" aria-controls="results-panel" tabindex="-1">Same-modal</button>
           <button id="tab-pose" data-result-tab="pose" role="tab" aria-selected="false" aria-controls="results-panel" tabindex="-1">Relative pose</button>
@@ -234,17 +237,20 @@
           <details class="result-details"><summary>Show table with method names</summary><div class="table-scroll" id="results-table"></div></details>
         </div>
       </div>
-      <aside class="runtime">
-        <h3>Speed</h3>
-        <p>Milliseconds per image pair on an H100 GPU. Shorter is faster.</p>
+    </div>
+
+    <div class="result-block rail">
+      <h3>Speed<small>How long one image pair takes</small></h3>
+      <div class="rail-body runtime">
+        <p>Milliseconds per image pair on an H100 GPU. Shorter bars are faster.</p>
         <div class="runtime-bars">
-          <div class="ours"><span>TartanMatch</span><b>27.8</b><i style="--bar:10.6%"></i></div>
-          <div><span>UFM</span><b>27.6</b><i style="--bar:10.5%"></i></div>
-          <div><span>MatchAnything (RoMa)</span><b>206.4</b><i style="--bar:78.7%"></i></div>
-          <div><span>MINIMA (RoMa)</span><b>262.4</b><i style="--bar:100%"></i></div>
+          <div class="ours"><span>TartanMatch</span><b>27.8 ms</b><i style="--bar:10.6%"></i></div>
+          <div><span>UFM</span><b>27.6 ms</b><i style="--bar:10.5%"></i></div>
+          <div><span>MatchAnything (RoMa)</span><b>206.4 ms</b><i style="--bar:78.7%"></i></div>
+          <div><span>MINIMA (RoMa)</span><b>262.4 ms</b><i style="--bar:100%"></i></div>
         </div>
         <p>TartanMatch adds almost no cost over the RGB-only UFM it starts from, and is 7.4 times faster than MatchAnything (RoMa).</p>
-      </aside>
+      </div>
     </div>
   </div>
 </section>
