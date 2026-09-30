@@ -48,14 +48,11 @@ function observeVideos(root = document) {
   });
 }
 function updateMotion() {
-  $('#motion-toggle').textContent = paused ? '▷ Play animations' : 'Ⅱ Pause animations';
-  $('#motion-toggle').setAttribute('aria-pressed', String(paused));
   $$('video').forEach(video => {
     if (paused) video.pause();
     else if (video.dataset.visible === 'true') playVideo(video);
   });
 }
-$('#motion-toggle').addEventListener('click', () => { paused = !paused; updateMotion(); });
 motionPreference.addEventListener('change', e => { paused = e.matches; updateMotion(); });
 document.addEventListener('visibilitychange', () => {
   $$('video').forEach(video => {
@@ -68,14 +65,14 @@ function warpLabels(source, target) {
 }
 
 const modalities = [
-  {id:'rgb', label:'RGB', color:'#91bbef'},
-  {id:'event', label:'Event', color:'#be9cfa'},
-  {id:'thermal', label:'Thermal', color:'#f6c275'},
-  {id:'depth', label:'Depth', color:'#85c9aa'},
-  {id:'lidar', label:'LiDAR', color:'#f69a85'}
+  {id:'rgb', label:'RGB', color:'var(--mod-rgb)'},
+  {id:'event', label:'Event', color:'var(--mod-event)'},
+  {id:'thermal', label:'Thermal', color:'var(--mod-thermal)'},
+  {id:'depth', label:'Depth', color:'var(--mod-depth)'},
+  {id:'lidar', label:'LiDAR', color:'var(--mod-lidar)'}
 ];
 const matrix = $('#pair-matrix');
-matrix.innerHTML = '<span aria-hidden="true"></span>' + modalities.map(m => `<span class="matrix-label">${m.label}</span>`).join('') + modalities.map((source, r) => `<span class="matrix-label row-label">${source.label}</span>` + modalities.map((target, c) => `<button class="pair-cell" style="--from:${source.color};--to:${target.color}" data-source="${source.id}" data-target="${target.id}" data-index="${r*5+c}" aria-label="${source.label} to ${target.label}" aria-pressed="${r===0&&c===1}" title="${source.label} → ${target.label}"><i aria-hidden="true"></i><span aria-hidden="true">→</span><i aria-hidden="true"></i></button>`).join('')).join('');
+matrix.innerHTML = '<span aria-hidden="true"></span>' + modalities.map(m => `<span class="matrix-label" style="color:${m.color}">${m.label}</span>`).join('') + modalities.map((source, r) => `<span class="matrix-label row-label" style="color:${source.color}">${source.label}</span>` + modalities.map((target, c) => `<button class="pair-cell" style="--from:${source.color};--to:${target.color}" data-source="${source.id}" data-target="${target.id}" data-index="${r*5+c}" aria-label="${source.label} to ${target.label}" aria-pressed="${r===0&&c===1}" title="${source.label} → ${target.label}"><i aria-hidden="true"></i><span aria-hidden="true">→</span><i aria-hidden="true"></i></button>`).join('')).join('');
 function selectPair(button) {
   $$('.pair-cell').forEach(cell => cell.setAttribute('aria-pressed', String(cell===button)));
   const {source, target, index} = button.dataset;
@@ -152,7 +149,6 @@ $('#sync-videos').addEventListener('click', async () => {
 const resultSets = {
   cross: {
     title:'Cross-modal correspondence',unit:'EPE (px) ↓',source:'Table II',
-    note:'Dense evaluation on all valid pixels. Each gray bar is the lowest EPE among the dense baselines for that specific pair and dataset. Some thermal settings remain challenging.',
     rows:[
       ['RGB → Depth','DTU',12.78,36.56,'MINIMA (RoMa)'],
       ['RGB → Event','DSERT-RoLL',6.63,11.61,'MatchAnything (RoMa)'],
@@ -167,7 +163,6 @@ const resultSets = {
   },
   same: {
     title:'Same-modal correspondence',unit:'EPE (px) ↓',source:'Table V',
-    note:'Dense evaluation, including event specialists E-RAFT and EMatch. TartanMatch improves substantially on depth and LiDAR, with small tradeoffs in some RGB and thermal settings.',
     rows:[
       ['RGB → RGB','DTU',5.74,4.68,'RoMa v2'],
       ['RGB → RGB','DSERT-RoLL',2.40,2.55,'RoMa v2'],
@@ -182,7 +177,6 @@ const resultSets = {
   },
   pose: {
     title:'Cross-modal relative pose',unit:'Pose AUC (%) ↑',source:'Table III',
-    note:'Pose accuracy at 5°, 10°, and 20° thresholds. Higher is better. Baselines are selected independently at each threshold. All results are zero-shot.',
     rows:[
       ['RGB → Depth','DTU · AUC@5°',10.6,10.7,'MINIMA (RoMa)'],
       ['RGB → Depth','DTU · AUC@10°',24.7,20.4,'MINIMA (RoMa)'],
@@ -200,20 +194,11 @@ function renderResults(kind) {
   $('#results-panel').setAttribute('aria-labelledby',`tab-${kind}`);
   $('#chart-title').textContent=data.title;
   $('#chart-unit').textContent=data.unit;
-  $('#chart-note').textContent=`${data.source}. ${data.note}`;
   $('#result-chart').innerHTML=data.rows.map(([pair,dataset,ours,baseline,name])=>`<div class="chart-row" role="img" aria-label="${pair}, ${dataset}: TartanMatch ${fmt(ours)}, ${name} ${fmt(baseline)}. ${data.unit}"><div class="chart-row-label">${pair}<small>${dataset}</small></div><div class="bar-pair" aria-hidden="true"><div class="result-bar ours" style="--width:${ours/max*100}%"></div><div class="result-bar" style="--width:${baseline/max*100}%"></div></div><div class="chart-values" aria-hidden="true"><b>${fmt(ours)}</b><span>${fmt(baseline)}</span></div></div>`).join('');
   $('#results-table').innerHTML=`<table><caption>${data.source} · ${data.unit}</caption><thead><tr><th scope="col">Pair</th><th scope="col">Evaluation</th><th scope="col">Baseline</th><th scope="col">Baseline value</th><th scope="col">TartanMatch</th></tr></thead><tbody>${data.rows.map(([pair,dataset,ours,baseline,name])=>`<tr><th scope="row">${pair}</th><td>${dataset}</td><td>${name}</td><td>${fmt(baseline)}</td><td>${fmt(ours)}</td></tr>`).join('')}</tbody></table>`;
 }
 setupTabs('[data-result-tab]',button=>renderResults(button.dataset.resultTab));
 renderResults('cross');
-
-$('.beyond-details').addEventListener('toggle', e => {
-  if(e.target.open && !$('#beyond-content').children.length) {
-    $('#beyond-content').innerHTML=[['retina','Retinal imagery','Color retinal image','Grayscale retinal image'],['satellite','Satellite imagery','Daytime','Nighttime']].map(([id,label,sourceName,targetName])=>`<article class="beyond-example"><h3>${label}</h3><div class="bidirectional-grid"><figure><figcaption>Source input<small>${sourceName}</small></figcaption><img src="assets/${id}-source.webp" alt="${label}: original ${sourceName} source" width="560" height="420"></figure><figure><figcaption>Target input<small>${targetName}</small></figcaption><img src="assets/${id}-target.webp" alt="${label}: original ${targetName} target" width="560" height="420"></figure><figure><figcaption>Target → source coordinates<small>Compare with source above ↑</small></figcaption><video muted loop playsinline controls preload="none" poster="assets/${id}-to-source.webp" data-src="assets/${id}-to-source.mp4" aria-label="${label}: ${targetName} target warped into ${sourceName} source coordinates"></video></figure><figure><figcaption>Source → target coordinates<small>Compare with target above ↑</small></figcaption><video muted loop playsinline controls preload="none" poster="assets/${id}-to-target.webp" data-src="assets/${id}-to-target.mp4" aria-label="${label}: ${sourceName} source warped into ${targetName} target coordinates"></video></figure></div><p class="media-caption">The animations show the transition to alignment. Each result keeps the appearance of the image being warped.</p></article>`).join('');
-    observeVideos($('#beyond-content'));
-  }
-  if(!e.target.open) $$('video',e.target).forEach(v=>v.pause());
-});
 
 const dialog=$('#image-dialog');
 $$('[data-zoom]').forEach(button=>button.addEventListener('click',()=>{
