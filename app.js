@@ -161,34 +161,57 @@ function setupTabs(selector, onSelect) {
     });
   });
 }
+// Real-world comparison: the source and target are shown once, then each method's output.
+// The clips are only 3-13 frames long, so one shared clock steps every video to the same
+// frame instead of letting them play independently and drift apart.
+const realClock = {videos: [], frames: 0, frame: 0, timer: null, userPaused: false, visible: false};
+function realStep() {
+  const t = (realClock.frame + 0.5) / 10;
+  realClock.videos.forEach(v => { v.currentTime = t; });
+  realClock.frame = (realClock.frame + 1) % realClock.frames;
+}
+function updateRealClock() {
+  const run = realClock.frames > 0 && realClock.visible && !realClock.userPaused && !paused && !document.hidden && !$('#panel-real').hidden;
+  if (run && !realClock.timer) realClock.timer = setInterval(realStep, 100);
+  if (!run && realClock.timer) { clearInterval(realClock.timer); realClock.timer = null; }
+  $('#real-play').textContent = realClock.userPaused || paused ? 'Play' : 'Pause';
+}
 function renderComparison() {
   const pair = $('#real-pair').value;
   const [source, target] = pair.split('-');
-  $$('video', $('#real-comparison')).forEach(v => { v.pause(); videoObserver.unobserve(v); observedVideos.delete(v); });
-  $('#real-labels').innerHTML = warpLabels(source, target);
-  $('#real-comparison').innerHTML = [
-    ['minima', 'MINIMA (RoMa)'], ['matchanything', 'MatchAnything (RoMa)'], ['ours', 'TartanMatch (ours)']
-  ].map(([id, name]) => `<article class="comparison-row ${id}"><h3>${name}</h3><video class="demo-video" muted loop playsinline controls preload="none" poster="assets/real-${pair}-${id}.webp" data-src="assets/real-${pair}-${id}.mp4" aria-label="${name}. Left: fixed ${modLabel(source)} source. Middle: ${modLabel(target)} target. Right: source moved into the target view."></video></article>`).join('');
-  observeVideos($('#real-comparison'));
+  const video = id => `<video muted playsinline preload="auto" poster="assets/real-${pair}-${id}.webp" src="assets/real-${pair}-${id}.mp4"></video>`;
+  const methods = [['ours', 'TartanMatch (ours)'], ['matchanything', 'MatchAnything (RoMa)'], ['minima', 'MINIMA (RoMa)']];
+  $('#real-comparison').innerHTML = `<div class="compare-group compare-inputs"><h3>Inputs</h3><div class="compare-panels">
+      <figure class="compare-panel" data-crop="source" role="img" aria-label="Source: ${modLabel(source)}, fixed view."><p class="panel-label">Source ${modName(source)}</p>${video('ours')}</figure>
+      <figure class="compare-panel" data-crop="target" role="img" aria-label="Target: ${modLabel(target)}, moving view."><p class="panel-label">Target ${modName(target)}</p>${video('ours')}</figure>
+    </div></div>
+    <div class="compare-group compare-outputs"><h3>Source moved into the target view, by method</h3><div class="compare-panels">
+      ${methods.map(([id, name]) => `<figure class="compare-panel ${id === 'ours' ? 'ours' : ''}" data-crop="output" role="img" aria-label="${name}: ${modLabel(source)} source moved into the ${modLabel(target)} target view."><p class="panel-label">${name}</p>${video(id)}</figure>`).join('')}
+    </div></div>`;
+  realClock.videos = $$('video', $('#real-comparison'));
+  realClock.frames = 0; realClock.frame = 0;
+  const first = realClock.videos[0];
+  const start = () => { realClock.frames = Math.max(1, Math.round(first.duration * 10)); realStep(); updateRealClock(); };
+  if (first.readyState >= 1) start(); else first.addEventListener('loadedmetadata', start, {once: true});
+  updateRealClock();
 }
+new IntersectionObserver(([entry]) => { realClock.visible = entry.isIntersecting; updateRealClock(); }, {threshold: 0.1}).observe($('#real-comparison'));
+$('#real-play').addEventListener('click', () => {
+  if (paused) { paused = false; realClock.userPaused = false; }
+  else realClock.userPaused = !realClock.userPaused;
+  updateRealClock();
+});
+motionPreference.addEventListener('change', updateRealClock);
+document.addEventListener('visibilitychange', updateRealClock);
 setupTabs('[data-demo-tab]', button => {
   const tab = button.dataset.demoTab;
   $('#panel-explorer').hidden = tab !== 'explorer';
   $('#panel-real').hidden = tab !== 'real';
   if (tab === 'real' && !$('#real-comparison').children.length) renderComparison();
+  updateRealClock();
   $$('video', $('#demos')).forEach(v => { if (v.closest('[hidden]')) v.pause(); else if (v.dataset.visible === 'true') playVideo(v); });
 });
 $('#real-pair').addEventListener('change', renderComparison);
-$('#sync-videos').addEventListener('click', async () => {
-  const videos = $$('video', $('#real-comparison'));
-  await Promise.all(videos.map(video => new Promise(resolve => {
-    if (!video.getAttribute('src')) { video.src = video.dataset.src; video.load(); }
-    video.pause(); video.currentTime = 0;
-    if (video.readyState >= 3) resolve();
-    else video.addEventListener('canplay', resolve, {once: true});
-  })));
-  videos.forEach(video => video.play().catch(() => {}));
-});
 
 // Values transcribed from Tables II, III, and V of the supplied manuscript.
 const resultSets = {

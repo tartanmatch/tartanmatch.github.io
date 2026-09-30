@@ -205,11 +205,10 @@
       <div class="comparison-toolbar">
         <label for="real-pair">Sensor pair</label>
         <select id="real-pair"><option value="event-lidar">Event to LiDAR</option><option value="event-event">Event to Event</option><option value="event-rgb">Event to RGB</option><option value="rgb-lidar">RGB to LiDAR</option><option value="thermal-event">Thermal to Event</option><option value="thermal-lidar">Thermal to LiDAR</option></select>
-        <button id="sync-videos" class="button button-small" type="button">Replay all from start</button>
+        <button id="real-play" class="button button-small" type="button">Pause</button>
       </div>
-      <p class="comparison-guide">Real sensor data from DSERT-RoLL, not used in training. Each row is a different method given the same inputs; compare how well the right panel lines up with the middle one.</p>
-      <div id="real-labels" class="triptych-labels comparison-labels"></div>
-      <div id="real-comparison" class="real-comparison"></div>
+      <p class="comparison-guide">Real sensor data from DSERT-RoLL, not used in training. All three methods get the same two inputs. Each output moves the source into the target view, so the best output is the one that lines up most closely with the target.</p>
+      <div id="real-comparison" class="compare"></div>
     </div>
   </div>
 </section>
