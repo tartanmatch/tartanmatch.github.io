@@ -22,20 +22,26 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 
 ## Page content
 
-- A title background with eight same-modal and cross-modal matching examples, labeled source and target inputs, and both warp directions. The full abstract follows the title section.
-- A 5 × 5 modality matrix with larger selection cells, matching colors for modality labels and markers, and animations for all 25 ordered pairs.
+- A title block (title, authors, affiliation, paper and BibTeX links) followed by the eight-pair warping video as a captioned teaser figure.
+- The full paper abstract, then three short overview blocks: why cross-sensor matching matters (heavy-snow observations from four sensors), what TartanMatch predicts (a switchable source / target / warped-source example), and the key results written as full sentences.
+- A 5 × 5 source/target selector for all 25 ordered pairs. Each cell is drawn as the crossing of the source (row) and target (column) colors.
 - Real-world DSERT-RoLL comparisons across six pairs, showing MINIMA, MatchAnything, and TartanMatch with synchronized replay.
-- An expandable architecture figure, modality representations, two-stage training, and the training data mixture.
-- Cross-modal, same-modal, and relative-pose charts with exact values and baseline tables.
-- Summary metrics with labels above the values, an enlarged runtime comparison, and a copyable BibTeX citation.
-- Dark and light themes, responsive layouts, keyboard navigation, and reduced-motion support.
+- An expandable architecture figure, sensor inputs, shared matcher, two-stage training, and the training data mixture.
+- Cross-modal, same-modal, and relative-pose charts with a plain-language explanation of each metric and exact values in a table, plus a runtime comparison.
+- Light and dark themes (following the system setting by default), responsive layouts, keyboard navigation, and reduced-motion support.
+
+## Design notes
+
+- Modality colors follow the paper's teaser figure: RGB blue, event purple, thermal green, depth orange, LiDAR red. They are used only where a sensor is named.
+- Body text is Source Serif 4 at 18 px; interface text, labels, and figure captions use Atkinson Hyperlegible Next at 15 px or larger. Secondary text keeps a contrast ratio above 7:1 in both themes.
+- Section headings sit in a left column; text and figures fill the column to the right. Wide media (teaser, demos, architecture, charts) span the full width.
 
 ## Project files
 
 - `index.html`: page structure and paper content.
 - `styles.css`: styling, themes, and responsive layouts.
 - `app.js`: video selection, interactive charts, and citation copying.
-- `assets/`: extracted and compressed media, fonts, and the paper PDF, ready for deployment (approximately 39 MB).
+- `assets/`: extracted and compressed media, fonts (`assets/fonts/`), and the paper PDF, ready for deployment (approximately 39 MB).
 - `scripts/serve.mjs`: local Node server with HTTP Range support for videos.
 - `scripts/build.mjs`: copies the static site into `dist/`.
 - `scripts/prepare_assets.py`: extracts and converts media from the original presentations and PDF; not needed for normal use.
@@ -68,7 +74,7 @@ The repository is public. GitHub Pages publishes the root of `gh-pages` over HTT
 2. `Modality_pairs_demo_video_new2 (2).pptx`: the 25-pair animations on slide 9 and real-sensor comparisons on slides 11–14. Original GIFs are converted to H.264 MP4, with their top labels replaced by clear column headings on the webpage.
 3. `tartanmatch_pre_final (4) (1).pptx`: author affiliation, heavy-snow sensor observations, and qualitative examples from unseen image domains.
 4. `tartanmatch_talk_finalized.pptx`: the eight matching groups used in the title background, from slides 1, 81, and 82.
-5. DM Sans and Space Grotesk are hosted locally, so previewing the site does not require requests to Google Fonts. Their license files are included in `assets/licenses/`.
+5. Source Serif 4 and Atkinson Hyperlegible Next are hosted locally in `assets/fonts/`, so previewing the site does not require requests to Google Fonts. DM Sans (`assets/dm-sans.ttf`) is kept only for `scripts/prepare_hero_video.py`, which draws the labels in the teaser video. License files are included in `assets/licenses/`.
 
 The 61.9% and 49.6% reductions are reported in the paper's abstract. Charts select the strongest dense baseline separately for each evaluation setting and retain settings where TartanMatch is not the best-performing method. Runtime values of 27.8, 27.6, 206.4, and 262.4 ms come from Table II; the displayed speedup over MatchAnything is 7.4×. Transfer examples illustrate qualitative behavior without making quantitative performance claims.
 
@@ -78,20 +84,20 @@ Asset extraction requires Python 3.11 and `Pillow`, `pymupdf`, and `imageio-ffmp
 
 ## Warp directions and interpretation
 
-- The full paper abstract precedes the interactive 25-pair and real-world demonstrations.
-- The 25-pair and real-world videos preserve all three original panels: a fixed source on the left, a changing target in the middle, and the source warped into the current target view on the right. Captions direct viewers to compare panel 3 with panel 2.
+- The overview example uses the `intro-*` still images: source, target, and source → target (`*-to-target.webp`). The heavy-snow figure uses `snow-*.webp`.
+- The 25-pair and real-world videos preserve all three original panels: a fixed source on the left, a changing target in the middle, and the source warped into the current target view on the right. Column labels sit above each panel, and the section text tells viewers to compare the right panel with the middle one.
 - On slide 82 of `tartanmatch_pre_final (4) (1).pptx`, retinal inputs are `image98` and `image99`; `image101` is target → source, and `image100` is source → target. Satellite inputs are `image102` and `image103`; `image104` is target → source, and `image105` is source → target. These supplementary assets are retained in `assets/` but are not displayed on the current page.
-- Animations of fixed image pairs transition from the original image to the predicted alignment; they are distinct from videos with a changing target view. Title-background posters show the final alignment for the static fallback and reduced-motion mode.
+- Animations of fixed image pairs transition from the original image to the predicted alignment; they are distinct from videos with a changing target view. Teaser posters show the final alignment for the static fallback and reduced-motion mode.
 - The header and footer use the TartanMatch wordmark.
 
-## Title background video
+## Teaser video
 
-The background uses eight matching groups from slides 1, 81, and 82 of `tartanmatch_talk_finalized.pptx` in a continuous grid.
+The teaser figure below the title uses eight matching groups from slides 1, 81, and 82 of `tartanmatch_talk_finalized.pptx` in a continuous grid.
 
 - Same-modal pairs: Depth/Depth and sparse Depth/Depth.
 - Cross-modal pairs: RGB/Depth, RGB/Thermal, Depth/RGB, RGB/Event, LiDAR/RGB, and sparse RGB/Depth.
 - Each group shows source and target inputs above target → source and source → target warps. The Depth/RGB group from slide 81 is reordered to follow this convention.
 - Desktop video: 1920 × 960, arranged in four columns and two rows. Mobile video: 900 × 1800, arranged in two columns and four rows. Both loop silently for 12 seconds.
 - `scripts/prepare_hero_video.py` reads the finalized presentation and generates the videos and final-alignment posters. `assets/hero-media-sources.json` records the mapping between each group and the original slide media.
-- Author names use 18 px text on desktop and 14 px on mobile. The affiliation appears below the contribution notes, at 18 px on desktop and 16 px on mobile.
-- Background playback pauses automatically offscreen and uses a static poster for reduced-motion preferences. Demo videos retain their native playback controls.
+- Author names use 19 px text on desktop and 17 px on mobile. The contribution notes follow the affiliation.
+- Teaser playback pauses automatically offscreen and uses a static poster for reduced-motion preferences. Demo videos retain their native playback controls.
