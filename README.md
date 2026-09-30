@@ -23,11 +23,11 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 ## Page content
 
 - A title background with eight same-modal and cross-modal matching examples, labeled source and target inputs, and both warp directions. The full abstract follows the title section.
-- A 5 × 5 modality matrix with animations for all 25 ordered pairs.
+- A 5 × 5 modality matrix with larger selection cells, matching colors for modality labels and markers, and animations for all 25 ordered pairs.
 - Real-world DSERT-RoLL comparisons across six pairs, showing MINIMA, MatchAnything, and TartanMatch with synchronized replay.
 - An expandable architecture figure, modality representations, two-stage training, and the training data mixture.
 - Cross-modal, same-modal, and relative-pose charts with exact values and baseline tables.
-- Heavy-snow sensor observations, bidirectional retinal and satellite warp examples, and a copyable BibTeX citation.
+- Summary metrics with labels above the values, an enlarged runtime comparison, and a copyable BibTeX citation.
 - Dark and light themes, responsive layouts, keyboard navigation, and reduced-motion support.
 
 ## Project files
@@ -80,7 +80,7 @@ Asset extraction requires Python 3.11 and `Pillow`, `pymupdf`, and `imageio-ffmp
 
 - The full paper abstract precedes the interactive 25-pair and real-world demonstrations.
 - The 25-pair and real-world videos preserve all three original panels: a fixed source on the left, a changing target in the middle, and the source warped into the current target view on the right. Captions direct viewers to compare panel 3 with panel 2.
-- On slide 82 of `tartanmatch_pre_final (4) (1).pptx`, retinal inputs are `image98` and `image99`; `image101` is target → source, and `image100` is source → target. Satellite inputs are `image102` and `image103`; `image104` is target → source, and `image105` is source → target. The page shows both inputs and both directions accordingly.
+- On slide 82 of `tartanmatch_pre_final (4) (1).pptx`, retinal inputs are `image98` and `image99`; `image101` is target → source, and `image100` is source → target. Satellite inputs are `image102` and `image103`; `image104` is target → source, and `image105` is source → target. These supplementary assets are retained in `assets/` but are not displayed on the current page.
 - Animations of fixed image pairs transition from the original image to the predicted alignment; they are distinct from videos with a changing target view. Title-background posters show the final alignment for the static fallback and reduced-motion mode.
 - The header and footer use the TartanMatch wordmark.
 
@@ -94,4 +94,4 @@ The background uses eight matching groups from slides 1, 81, and 82 of `tartanma
 - Desktop video: 1920 × 960, arranged in four columns and two rows. Mobile video: 900 × 1800, arranged in two columns and four rows. Both loop silently for 12 seconds.
 - `scripts/prepare_hero_video.py` reads the finalized presentation and generates the videos and final-alignment posters. `assets/hero-media-sources.json` records the mapping between each group and the original slide media.
 - Author names use 18 px text on desktop and 14 px on mobile. The affiliation appears below the contribution notes, at 18 px on desktop and 16 px on mobile.
-- Playback supports a pause control, automatic pausing offscreen, and a static poster for reduced-motion preferences.
+- Background playback pauses automatically offscreen and uses a static poster for reduced-motion preferences. Demo videos retain their native playback controls.
