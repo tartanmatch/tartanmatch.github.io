@@ -76,8 +76,8 @@
 .stats p > span { display: block; font-size: 15px; margin-top: 8px; }
 .stats .stat-value { margin-top: auto; }
 #demonstrations .section-heading { margin-bottom: 28px; }
-.demo-tabs { margin-bottom: 32px; padding: 6px; gap: 6px; }
-.demo-tabs button { font-size: 18px; font-weight: 600; padding: 13px 23px; }
+.demo-tabs { margin-bottom: 28px; padding: 4px; gap: 4px; }
+.demo-tabs button { font-size: 16px; font-weight: 600; padding: 10px 18px; }
 .demo-tabs button[aria-selected=true] { background: var(--accent); color: var(--bg); }
 .explorer-layout { grid-template-columns: 470px minmax(0, 1fr); gap: 32px; }
 .matrix-panel { display: block; padding: 24px; }
@@ -130,7 +130,7 @@
   .stats .stat-value { font-size: 37px; }
   .stats .stat-value span { font-size: 16px; }
   .demo-tabs { display: flex; width: 100%; gap: 4px; padding: 4px; }
-  .demo-tabs button { flex: 1; padding: 12px 8px; font-size: 15px; white-space: normal; line-height: 1.4; }
+  .demo-tabs button { flex: 1; padding: 10px 8px; font-size: 14px; white-space: normal; line-height: 1.4; }
   .matrix-panel { padding: 18px; }
   .matrix-panel > .small-label { font-size: 14px; max-width: none; }
   .matrix-direction { font-size: 15px; margin: 22px 0 12px; }
