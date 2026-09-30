@@ -22,7 +22,7 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 
 ## Page content
 
-- A title block (title, authors, affiliation, paper and BibTeX links) followed by the eight-pair warping video as a captioned teaser figure.
+- A title block (title, authors, affiliation, paper and BibTeX links) centered over the dimmed eight-pair warping video, with a caption below explaining the tiles.
 - The full paper abstract, then three short overview blocks: why cross-sensor matching matters (heavy-snow observations from four sensors), what TartanMatch predicts (a switchable source / target / warped-source example), and the key results written as full sentences.
 - A 5 × 5 source/target selector for all 25 ordered pairs. Each cell is drawn as the crossing of the source (row) and target (column) colors.
 - Real-world DSERT-RoLL comparisons across six pairs, showing MINIMA, MatchAnything, and TartanMatch with synchronized replay.
@@ -34,6 +34,8 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 
 - Modality colors follow the paper's teaser figure: RGB blue, event purple, thermal green, depth orange, LiDAR red. They are used only where a sensor is named.
 - Body text is Source Serif 4 at 18 px; interface text, labels, and figure captions use Atkinson Hyperlegible Next at 15 px or larger. Secondary text keeps a contrast ratio above 7:1 in both themes.
+- The title text sits over the background video behind a radial dark shade, with text shadows for contrast.
+- Key results pair the four findings with a chart of mean endpoint error (TartanMatch against the strongest other method per test), the averages behind the 61.9% and 49.6% figures.
 - Section headings sit in a left column; text and figures fill the column to the right. Wide media (teaser, demos, architecture, charts) span the full width.
 
 ## Project files
@@ -87,12 +89,12 @@ Asset extraction requires Python 3.11 and `Pillow`, `pymupdf`, and `imageio-ffmp
 - The overview example uses the `intro-*` still images: source, target, and source → target (`*-to-target.webp`). The heavy-snow figure uses `snow-*.webp`.
 - The 25-pair and real-world videos preserve all three original panels: a fixed source on the left, a changing target in the middle, and the source warped into the current target view on the right. Column labels sit above each panel, and the section text tells viewers to compare the right panel with the middle one.
 - On slide 82 of `tartanmatch_pre_final (4) (1).pptx`, retinal inputs are `image98` and `image99`; `image101` is target → source, and `image100` is source → target. Satellite inputs are `image102` and `image103`; `image104` is target → source, and `image105` is source → target. These supplementary assets are retained in `assets/` but are not displayed on the current page.
-- Animations of fixed image pairs transition from the original image to the predicted alignment; they are distinct from videos with a changing target view. Teaser posters show the final alignment for the static fallback and reduced-motion mode.
+- Animations of fixed image pairs transition from the original image to the predicted alignment; they are distinct from videos with a changing target view. Title-background posters show the final alignment for the static fallback and reduced-motion mode.
 - The header and footer use the TartanMatch wordmark.
 
-## Teaser video
+## Title background video
 
-The teaser figure below the title uses eight matching groups from slides 1, 81, and 82 of `tartanmatch_talk_finalized.pptx` in a continuous grid.
+The title background uses eight matching groups from slides 1, 81, and 82 of `tartanmatch_talk_finalized.pptx` in a continuous grid.
 
 - Same-modal pairs: Depth/Depth and sparse Depth/Depth.
 - Cross-modal pairs: RGB/Depth, RGB/Thermal, Depth/RGB, RGB/Event, LiDAR/RGB, and sparse RGB/Depth.
@@ -100,4 +102,4 @@ The teaser figure below the title uses eight matching groups from slides 1, 81, 
 - Desktop video: 1920 × 960, arranged in four columns and two rows. Mobile video: 900 × 1800, arranged in two columns and four rows. Both loop silently for 12 seconds.
 - `scripts/prepare_hero_video.py` reads the finalized presentation and generates the videos and final-alignment posters. `assets/hero-media-sources.json` records the mapping between each group and the original slide media.
 - Author names use 19 px text on desktop and 17 px on mobile. The contribution notes follow the affiliation.
-- Teaser playback pauses automatically offscreen and uses a static poster for reduced-motion preferences. Demo videos retain their native playback controls.
+- Background playback pauses automatically offscreen and uses a static poster for reduced-motion preferences. Demo videos retain their native playback controls.

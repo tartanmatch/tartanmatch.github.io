@@ -11,9 +11,7 @@
   <link rel="preload" href="assets/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/atkinson-hyperlegible-next.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
-  <script>try{const t=localStorage.getItem('tm-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
-  /* Temporary: pick the title design to compare (?hero=panel or ?hero=overlay). */
-  document.documentElement.dataset.hero=new URLSearchParams(location.search).get('hero')==='overlay'?'overlay':'panel';</script>
+  <script>try{const t=localStorage.getItem('tm-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
   <script defer src="app.js"></script>
 </head>
 <body>
