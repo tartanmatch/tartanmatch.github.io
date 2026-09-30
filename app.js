@@ -101,6 +101,12 @@ examplePicker.addEventListener('keydown', e => {
   next.focus(); showExample(next);
 });
 
+// Key results: a static 5 x 5 grid showing that one model covers every pair.
+$('#mini-tartan').innerHTML = '<span></span>'
+  + modalities.map(m => `<span class="axis-label" data-mod="${m.id}">${m.label}</span>`).join('')
+  + modalities.map(source => `<span class="axis-label row" data-mod="${source.id}">${source.label}</span>`
+    + modalities.map(target => `<i class="pair-cell" style="--from:var(--mod-${source.id});--to:var(--mod-${target.id})"></i>`).join('')).join('');
+
 // 25-pair explorer.
 const matrix = $('#pair-matrix');
 matrix.innerHTML = '<span class="axis-corner">Source ↓<br>Target →</span>'
@@ -241,6 +247,30 @@ function renderResults(kind) {
 }
 setupTabs('[data-result-tab]', button => renderResults(button.dataset.resultTab));
 renderResults('cross');
+
+// Joint vs. single-pair training, transcribed from Table VII (TartanAir V2 validation EPE).
+// The last value is the paper's relative improvement of the joint model, in percent.
+const jointRows = [
+  ['rgb', 'rgb', 0.82, 1.00, -22.0], ['depth', 'depth', 0.73, 0.90, -23.3], ['event', 'event', 1.29, 1.22, 5.4], ['thermal', 'thermal', 3.14, 3.24, -3.2], ['lidar', 'lidar', 7.84, 5.00, 36.2],
+  ['rgb', 'depth', 3.16, 2.89, 8.5], ['rgb', 'event', 2.66, 1.69, 36.5], ['rgb', 'thermal', 2.28, 2.34, -2.6], ['rgb', 'lidar', 8.78, 6.01, 31.6], ['depth', 'event', 3.12, 1.85, 40.7],
+  ['depth', 'thermal', 5.93, 5.04, 15.0], ['depth', 'lidar', 4.85, 3.19, 34.2], ['event', 'thermal', 5.29, 3.85, 27.2], ['event', 'lidar', 14.20, 5.47, 61.5], ['thermal', 'lidar', 13.02, 9.37, 28.0]
+].sort((a, b) => b[2] - a[2]);
+(() => {
+  const scale = 15;
+  const pos = v => `${v / scale * 100}%`;
+  const kind = (s, t) => s === t ? 'Same-modal' : 'Cross-modal';
+  const ticks = [0, 5, 10, 15].map(t => `<span style="left:${pos(t)}">${t}</span>`).join('');
+  $('#joint-chart').innerHTML = `<div class="joint-row joint-axis" aria-hidden="true"><span>Error in pixels</span><div class="joint-ticks">${ticks}</div><span>Change</span></div>`
+    + jointRows.map(([s, t, single, joint, c]) => {
+      const better = c > 0;
+      return `<div class="joint-row" role="img" aria-label="${modLabel(s)} to ${modLabel(t)}: one model per pair ${single.toFixed(2)} pixels, joint model ${joint.toFixed(2)} pixels, ${Math.abs(c).toFixed(1)}% ${better ? 'lower' : 'higher'} error.">
+        <div class="chart-row-label">${modLabel(s)} → ${modLabel(t)}<small>${kind(s, t)}</small></div>
+        <div class="joint-track" aria-hidden="true"><i class="joint-link" style="left:${pos(Math.min(single, joint))};width:${Math.abs(single - joint) / scale * 100}%"></i><i class="dot-single" style="left:${pos(single)}" title="One model per pair: ${single.toFixed(2)} px"></i><i class="dot-joint" style="left:${pos(joint)}" title="Joint model: ${joint.toFixed(2)} px"></i></div>
+        <div class="joint-change ${better ? 'better' : 'worse'}" aria-hidden="true">${better ? '−' : '+'}${Math.abs(c).toFixed(1)}%</div>
+      </div>`;
+    }).join('');
+  $('#joint-table').innerHTML = `<table><caption>Table VII of the paper. Endpoint error (px) on TartanAir V2 validation, lower is better.</caption><thead><tr><th scope="col">Pair</th><th scope="col">Type</th><th scope="col">One model per pair</th><th scope="col">Joint model</th><th scope="col">Error change</th></tr></thead><tbody>${jointRows.map(([s, t, single, joint, c]) => { return `<tr><th scope="row">${modLabel(s)} → ${modLabel(t)}</th><td>${kind(s, t)}</td><td class="${c < 0 ? 'win' : ''}">${single.toFixed(2)}</td><td class="${c > 0 ? 'win' : ''}">${joint.toFixed(2)}</td><td>${c > 0 ? '−' : '+'}${Math.abs(c).toFixed(1)}%</td></tr>`; }).join('')}<tr><th scope="row">Average, cross-modal</th><td>10 pairs</td><td>6.33</td><td class="win">4.17</td><td>−34.1%</td></tr><tr><th scope="row">Average, same-modal</th><td>5 pairs</td><td>2.76</td><td class="win">2.27</td><td>−17.8%</td></tr></tbody></table>`;
+})();
 
 const dialog = $('#image-dialog');
 $$('[data-zoom]').forEach(button => button.addEventListener('click', () => {

@@ -124,24 +124,48 @@ figcaption{font-family:var(--sans);font-size:16px;line-height:1.55;color:var(--t
 .panel-label{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .panel-output img{outline:2px solid var(--ink);outline-offset:2px}
 
-.findings-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:48px;align-items:start}
-.findings ul{list-style:none;display:grid;gap:24px}
-.summary-chart{font-family:var(--sans);padding:22px 24px;border:1px solid var(--rule);border-radius:6px;background:var(--paper-alt)}
-.summary-title{margin:0 0 12px;color:var(--ink);font-weight:700;font-size:17px;line-height:1.35}
-.summary-title small{display:block;font-weight:400;font-size:15px;color:var(--text-2);margin-top:2px}
-.summary-group{margin-top:18px;padding-top:14px;border-top:1px solid var(--rule)}
-.summary-label{font-weight:700;color:var(--ink);font-size:16px;margin-bottom:8px}
+/* Key results: one panel per finding, text on the left and its evidence on the right. */
+.finding-list{list-style:none;padding:0;margin:0;display:grid;gap:16px}
+.finding{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,360px);gap:40px;align-items:start;padding:28px 32px;background:var(--paper-alt);border:1px solid var(--rule);border-radius:8px}
+.finding h3{font-family:var(--sans);font-size:20px;font-weight:700;line-height:1.3;margin:0 0 10px}
+.finding p{max-width:60ch}
+.finding-link{display:inline-block;margin-top:14px;font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);text-underline-offset:3px}
+.mini-chart{font-family:var(--sans)}
+.mini-chart figcaption{margin:0 0 10px;font-size:15px;font-weight:600;color:var(--ink)}
+.mini-chart .chart-legend{gap:6px 18px;margin-bottom:4px}
+.mini-chart .runtime-bars{margin:0;gap:10px;font-size:15px}
+.mini-note{margin-top:12px;font-size:15px;color:var(--text-2)}
+.summary-group{margin-top:12px}
+.summary-label{font-weight:700;color:var(--ink);font-size:15px;margin-bottom:6px}
 .summary-label span{font-weight:400;color:var(--text-2);margin-left:6px}
 .summary-bar{display:flex;align-items:center;gap:8px;height:20px;margin-top:2px}
-.summary-bar::before{content:'';display:block;height:18px;width:calc(var(--w) * .78);background:var(--baseline);border-radius:0 4px 4px 0}
+.summary-bar::before{content:'';display:block;height:16px;width:calc(var(--w) * .8);background:var(--baseline);border-radius:0 4px 4px 0}
 .summary-bar.ours::before{background:var(--ours)}
 .summary-bar b{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
 .summary-bar:not(.ours) b{font-weight:400;color:var(--text)}
-.summary-delta{margin-top:8px;font-size:16px;font-weight:700;color:var(--ink)}
-.summary-note{margin-top:18px;font-size:15px;line-height:1.5;color:var(--text-2)}
-.summary-note a{color:var(--ink)}
-.findings li{padding-left:20px;border-left:3px solid var(--rule-strong)}
-.findings li strong{white-space:nowrap}
+.mini-tartan{display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr));gap:4px;align-items:center;max-width:360px}
+.mini-tartan .axis-label{font-size:13px;padding-bottom:2px}
+.mini-tartan .pair-cell{--weave:70%;cursor:default}
+
+/* Joint training dumbbell chart. */
+.joint-chart{font-family:var(--sans);border-top:1px solid var(--rule);margin-top:4px}
+.joint-row{display:grid;grid-template-columns:190px minmax(0,1fr) 72px;gap:16px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule)}
+.joint-axis{border-bottom:0;padding:8px 0 0;font-size:14px;color:var(--text-2)}
+.joint-axis>span:last-child{text-align:right}
+.joint-ticks{position:relative;height:18px}
+.joint-ticks span{position:absolute;transform:translateX(-50%)}
+.joint-ticks span:first-child{transform:none}
+.joint-ticks span:last-child{transform:translateX(-100%)}
+.joint-track{position:relative;height:20px;background:linear-gradient(90deg,var(--rule) 1px,transparent 1px) 0 0/33.333% 100%}
+.joint-track i{position:absolute;top:50%}
+.joint-link{height:3px;margin-top:-1.5px;background:var(--baseline)}
+.dot-single,.dot-joint{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;box-shadow:0 0 0 2px var(--paper-alt)}
+.dot-single{background:var(--paper-alt);border:2.5px solid var(--baseline)}
+.dot-joint{background:var(--ours)}
+.chart-legend .dot-single,.chart-legend .dot-joint{position:static;display:inline-block;width:12px;height:12px;margin:0 8px 0 0;vertical-align:-1px;border-radius:50%;box-shadow:none}
+.joint-change{text-align:right;font-size:15px;font-variant-numeric:tabular-nums;color:var(--text-2)}
+.joint-change.better{font-weight:700;color:var(--ink)}
+.joint-summary{margin-top:20px}
 
 /* Tabs */
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
@@ -257,8 +281,9 @@ dialog img{display:block;width:100%;padding:24px}
 #toast.visible{opacity:1;transform:translate(-50%,0)}
 
 @media (max-width:980px){
-  .explorer,.data-body,.findings-body{grid-template-columns:minmax(0,1fr);gap:40px}
-  .summary-chart{max-width:480px}
+  .explorer,.data-body{grid-template-columns:minmax(0,1fr);gap:40px}
+  .finding{grid-template-columns:minmax(0,1fr);gap:24px}
+  .mini-chart{max-width:420px}
   .rail{grid-template-columns:minmax(0,1fr)}
   .rail>h2{margin-bottom:.6em}
   .rail>h3{margin-bottom:.5em}
@@ -284,10 +309,10 @@ dialog img{display:block;width:100%;padding:24px}
   .sensor-row{grid-template-columns:repeat(2,1fr)}
   .example-panels{grid-template-columns:1fr 1fr}
   .example-panels .panel-output{grid-column:1/-1}
-  .findings ul{grid-template-columns:1fr}
-  .findings li strong{white-space:normal}
-  .triptych-labels{font-size:14px}
+    .triptych-labels{font-size:14px}
   .chart-row{grid-template-columns:120px minmax(0,1fr) 54px;gap:10px}
+  .joint-row{grid-template-columns:110px minmax(0,1fr) 58px;gap:10px}
+  .finding{padding:22px 18px}
   .comparison-toolbar .button{margin-left:0}
   .bibtex .button{position:static;margin:12px 0 0 12px}
   .bibtex pre{padding-top:12px;font-size:14px}

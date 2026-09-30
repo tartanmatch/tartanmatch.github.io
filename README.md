@@ -1,6 +1,6 @@
 # TartanMatch Project Website
 
-Static project website for **TartanMatch: Towards Universal Dense Matching Across Modalities**, with a visual style inspired by the MAC-I² project page. The site uses figures and animations from the paper and presentation slides, with no third-party runtime dependencies.
+Static project website for **TartanMatch: Towards Universal Dense Correspondence Across Modalities**, with a visual style inspired by the MAC-I² project page. The site uses figures and animations from the paper and presentation slides, with no third-party runtime dependencies.
 
 ## Local preview
 
@@ -27,7 +27,7 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 - A 5 × 5 source/target selector for all 25 ordered pairs. Each cell is drawn as the crossing of the source (row) and target (column) colors.
 - Real-world DSERT-RoLL comparisons across six pairs, showing MINIMA, MatchAnything, and TartanMatch with synchronized replay.
 - An expandable architecture figure, sensor inputs, shared matcher, two-stage training, and the training data mixture.
-- Cross-modal, same-modal, and relative-pose charts with a plain-language explanation of each metric and exact values in a table, plus a runtime comparison.
+- Results in three labeled blocks: accuracy (cross-modal, same-modal, and relative-pose charts with exact values in a table), joint training (a per-pair chart of Table VII comparing one model per pair with the jointly trained model), and speed.
 - Light and dark themes (following the system setting by default), responsive layouts, keyboard navigation, and reduced-motion support.
 
 ## Design notes
@@ -35,7 +35,7 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 - Modality colors follow the paper's teaser figure: RGB blue, event purple, thermal green, depth orange, LiDAR red. They are used only where a sensor is named.
 - Body text is Source Serif 4 at 18 px; interface text, labels, and figure captions use Atkinson Hyperlegible Next at 15 px or larger. Secondary text keeps a contrast ratio above 7:1 in both themes.
 - The title text sits over the background video behind a radial dark shade, with text shadows for contrast.
-- Key results pair the four findings with a chart of mean endpoint error (TartanMatch against the strongest other method per test), the averages behind the 61.9% and 49.6% figures.
+- Key results show each finding as its own panel with a short title, a sentence, a small chart, and a link to the details. The accuracy chart shows mean endpoint error over the tests in Tables II and V (the averages behind the 61.9% and 49.6% figures); the joint-training chart shows the Table VII averages (34.1% and 17.8%), measured on TartanAir V2 validation data.
 - Section headings sit in a left column; text and figures fill the column to the right. Wide media (teaser, demos, architecture, charts) span the full width.
 
 ## Project files

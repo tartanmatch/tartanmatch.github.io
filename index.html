@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TartanMatch: Towards Universal Dense Matching Across Modalities</title>
+  <title>TartanMatch: Towards Universal Dense Correspondence Across Modalities</title>
   <meta name="description" content="TartanMatch is one dense matching model for all 25 ordered pairs of RGB, event, thermal, depth, and projected LiDAR.">
   <link rel="canonical" href="https://tartanmatch.github.io/">
   <meta property="og:url" content="https://tartanmatch.github.io/">
-  <meta name="theme-color" content="#ffffff"><meta property="og:title" content="TartanMatch: Towards Universal Dense Matching Across Modalities"><meta property="og:description" content="TartanMatch learns dense correspondence across RGB, event, thermal, depth, and projected LiDAR."><meta property="og:image" content="https://tartanmatch.github.io/assets/teaser.png">
+  <meta name="theme-color" content="#ffffff"><meta property="og:title" content="TartanMatch: Towards Universal Dense Correspondence Across Modalities"><meta property="og:description" content="TartanMatch learns dense correspondence across RGB, event, thermal, depth, and projected LiDAR."><meta property="og:image" content="https://tartanmatch.github.io/assets/teaser.png">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/atkinson-hyperlegible-next.woff2" as="font" type="font/woff2" crossorigin>
@@ -33,7 +33,7 @@
   <div class="hero-text">
     <div class="hero-card">
       <h1>TartanMatch</h1>
-      <p class="subtitle">Towards Universal Dense Matching Across Modalities</p>
+      <p class="subtitle">Towards Universal Dense Correspondence Across Modalities</p>
       <p class="authors">
         <span>Hyeokjoon Kwon<sup>*</sup></span>, <span>Jiting Cai<sup>*†</sup></span>, <span>Ruogu Li<sup>*</sup></span>, <span>Kritan Bhandari</span>, <span>Geethika Hemkumar</span>, <span>Parv Maheshwari</span>, <span>Yuheng Qiu</span>, <span>Yuchen Zhang</span>, <span>Sebastian Scherer</span>, <span>Wenshan Wang</span>
       </p>
@@ -100,31 +100,77 @@
 
     <div class="overview-block rail findings">
       <h2>Key results</h2>
-      <div class="rail-body findings-body">
-      <ul>
-        <li>One network with a single set of weights handles <strong>all 25 ordered pairs</strong> of RGB, event, thermal, depth, and projected LiDAR.</li>
-        <li>On real-sensor datasets never seen in training, its matches are off by <strong>61.9% fewer pixels</strong> on cross-modal pairs and <strong>49.6% fewer</strong> on same-modal pairs than the best competing method for each pair (average endpoint error).</li>
-        <li>Training all pairs together is more accurate than training one model per pair, and the gain is largest on the hardest cross-modal pairs.</li>
-        <li>It runs in <strong>27.8 ms</strong> per image pair on an H100 GPU, 7.4 times faster than MatchAnything (RoMa).</li>
-      </ul>
-      <figure class="summary-chart">
-        <figcaption class="summary-title">Average matching error on real-sensor tests<small>Pixels between predicted and true match. Lower is better.</small></figcaption>
-        <div class="chart-legend"><span><i class="legend-ours"></i>TartanMatch</span><span><i class="legend-baseline"></i>Best other method</span></div>
-        <div class="summary-group" role="img" aria-label="Cross-modal, 9 tests: TartanMatch 9.50 pixels, best other method 24.94 pixels, 61.9% lower.">
-          <p class="summary-label">Cross-modal <span>9 tests</span></p>
-          <div class="summary-bar ours" style="--w:38.1%" title="TartanMatch: 9.50 px"><b>9.50</b></div>
-          <div class="summary-bar" style="--w:100%" title="Best other method: 24.94 px"><b>24.94</b></div>
-          <p class="summary-delta">61.9% lower error</p>
-        </div>
-        <div class="summary-group" role="img" aria-label="Same-modal, 9 tests: TartanMatch 3.08 pixels, best other method 6.12 pixels, 49.6% lower.">
-          <p class="summary-label">Same-modal <span>9 tests</span></p>
-          <div class="summary-bar ours" style="--w:12.35%" title="TartanMatch: 3.08 px"><b>3.08</b></div>
-          <div class="summary-bar" style="--w:24.53%" title="Best other method: 6.12 px"><b>6.12</b></div>
-          <p class="summary-delta">49.6% lower error</p>
-        </div>
-        <p class="summary-note">Mean endpoint error over the tests in Tables II and V. For each test, the comparison is the strongest other method on that test. Per-test values are in <a href="#results">Results</a>.</p>
-      </figure>
-      </div>
+      <ol class="finding-list">
+        <li class="finding">
+          <div class="finding-text">
+            <h3>One model for all 25 sensor pairs</h3>
+            <p>A single network with one set of weights matches RGB, event, thermal, depth, and projected LiDAR in every direction, including same-sensor pairs.</p>
+            <a class="finding-link" href="#demos">Try every pair in the demo</a>
+          </div>
+          <figure class="mini-chart">
+            <figcaption>Source (rows) and target (columns)</figcaption>
+            <div id="mini-tartan" class="mini-tartan" role="img" aria-label="A 5 by 5 grid of source and target sensors. All 25 pairs are handled by one model."></div>
+          </figure>
+        </li>
+        <li class="finding">
+          <div class="finding-text">
+            <h3>Much lower error than existing matchers</h3>
+            <p>On real-sensor datasets never seen in training, TartanMatch’s average matching error is <strong>61.9% lower</strong> on cross-modal pairs and <strong>49.6% lower</strong> on same-modal pairs than the strongest other method on each test.</p>
+            <a class="finding-link" href="#accuracy">See every test</a>
+          </div>
+          <figure class="mini-chart">
+            <figcaption>Average error in pixels, lower is better</figcaption>
+            <div class="chart-legend"><span><i class="legend-ours"></i>TartanMatch</span><span><i class="legend-baseline"></i>Best other method</span></div>
+            <div class="summary-group" role="img" aria-label="Cross-modal, 9 tests: TartanMatch 9.50 pixels, best other method 24.94 pixels.">
+              <p class="summary-label">Cross-modal <span>9 tests</span></p>
+              <div class="summary-bar ours" style="--w:38.1%"><b>9.50</b></div>
+              <div class="summary-bar" style="--w:100%"><b>24.94</b></div>
+            </div>
+            <div class="summary-group" role="img" aria-label="Same-modal, 9 tests: TartanMatch 3.08 pixels, best other method 6.12 pixels.">
+              <p class="summary-label">Same-modal <span>9 tests</span></p>
+              <div class="summary-bar ours" style="--w:12.35%"><b>3.08</b></div>
+              <div class="summary-bar" style="--w:24.53%"><b>6.12</b></div>
+            </div>
+          </figure>
+        </li>
+        <li class="finding">
+          <div class="finding-text">
+            <h3>Training on all pairs together beats one model per pair</h3>
+            <p>We compared TartanMatch with 15 separate models, each trained on a single sensor pair. The joint model has <strong>34.1% lower error</strong> on cross-modal pairs and <strong>17.8% lower</strong> on same-modal pairs, and improves 11 of the 15 pairs. The gain is largest where a single-pair model struggles most: error on Event&thinsp;→&thinsp;LiDAR falls by 61.5%.</p>
+            <a class="finding-link" href="#joint-training">See all 15 pairs</a>
+          </div>
+          <figure class="mini-chart">
+            <figcaption>Average error in pixels, lower is better</figcaption>
+            <div class="chart-legend"><span><i class="legend-ours"></i>Joint (TartanMatch)</span><span><i class="legend-baseline"></i>One model per pair</span></div>
+            <div class="summary-group" role="img" aria-label="Cross-modal, 10 pairs: joint model 4.17 pixels, one model per pair 6.33 pixels.">
+              <p class="summary-label">Cross-modal <span>10 pairs</span></p>
+              <div class="summary-bar ours" style="--w:65.9%"><b>4.17</b></div>
+              <div class="summary-bar" style="--w:100%"><b>6.33</b></div>
+            </div>
+            <div class="summary-group" role="img" aria-label="Same-modal, 5 pairs: joint model 2.27 pixels, one model per pair 2.76 pixels.">
+              <p class="summary-label">Same-modal <span>5 pairs</span></p>
+              <div class="summary-bar ours" style="--w:35.9%"><b>2.27</b></div>
+              <div class="summary-bar" style="--w:43.6%"><b>2.76</b></div>
+            </div>
+            <p class="mini-note">Measured on TartanAir V2 validation data.</p>
+          </figure>
+        </li>
+        <li class="finding">
+          <div class="finding-text">
+            <h3>Fast inference</h3>
+            <p>It runs in <strong>27.8 ms</strong> per image pair on an H100 GPU, about the same as the RGB-only UFM it builds on and 7.4 times faster than MatchAnything (RoMa).</p>
+            <a class="finding-link" href="#speed">See the speed comparison</a>
+          </div>
+          <figure class="mini-chart">
+            <figcaption>Milliseconds per image pair, lower is faster</figcaption>
+            <div class="runtime-bars">
+              <div class="ours"><span>TartanMatch</span><b>27.8</b><i style="--bar:10.6%"></i></div>
+              <div><span>MatchAnything (RoMa)</span><b>206.4</b><i style="--bar:78.7%"></i></div>
+              <div><span>MINIMA (RoMa)</span><b>262.4</b><i style="--bar:100%"></i></div>
+            </div>
+          </figure>
+        </li>
+      </ol>
     </div>
   </div>
 </section>
@@ -218,10 +264,10 @@
   <div class="container">
     <div class="section-intro rail">
       <h2>Results</h2>
-      <p>We measure two things: how accurate the matches are, and how long the model takes. All accuracy tests are zero-shot: they use real sensor data from datasets not seen in training.</p>
+      <p>Three questions: how accurate the matches are, whether training on all pairs together helps, and how long the model takes. The accuracy tests are zero-shot: they use real sensor data from datasets not seen in training.</p>
     </div>
 
-    <div class="result-block rail">
+    <div class="result-block rail" id="accuracy">
       <h3>Accuracy<small>How close predicted matches are to the true ones</small></h3>
       <div class="rail-body">
         <p>Each row compares TartanMatch with the strongest other method on that specific pair and dataset, including the cases where TartanMatch is not the best.</p>
@@ -239,7 +285,18 @@
       </div>
     </div>
 
-    <div class="result-block rail">
+    <div class="result-block rail" id="joint-training">
+      <h3>Joint training<small>One model for all pairs, compared with one model per pair</small></h3>
+      <div class="rail-body">
+        <p>To test whether learning all pairs together helps, we trained 15 separate models, one for each unordered sensor pair (5 same-modal, 10 cross-modal), and compared them with a single model trained on all 25 ordered pairs. Both use the same TartanAir V2 training data and are evaluated on its validation split. Pairs are sorted from hardest to easiest for a single-pair model.</p>
+        <div class="chart-legend"><span><i class="dot-single"></i>One model per pair</span><span><i class="dot-joint"></i>Joint model (TartanMatch)</span></div>
+        <div id="joint-chart" class="joint-chart"></div>
+        <p class="joint-summary">The joint model is better on 11 of the 15 pairs, and the improvement grows with difficulty: the four hardest pairs for a single-pair model all improve by 28% or more. The four pairs that get worse already have single-pair errors of 3.1 pixels or less, and each loses at most 0.2 pixels. The paper’s hypothesis is that joint training favors cues shared across sensors over sensor-specific detail, which helps hard pairs at a small cost in sub-pixel precision on easy ones.</p>
+        <details class="result-details"><summary>Show table</summary><div class="table-scroll" id="joint-table"></div></details>
+      </div>
+    </div>
+
+    <div class="result-block rail" id="speed">
       <h3>Speed<small>How long one image pair takes</small></h3>
       <div class="rail-body runtime">
         <p>Milliseconds per image pair on an H100 GPU. Shorter bars are faster.</p>
@@ -264,7 +321,7 @@
       <button id="copy-citation" class="button button-small" type="button">Copy BibTeX</button>
       <pre><code id="bibtex">@misc{kwon2026tartanmatch,
   title  = {TartanMatch: Towards Universal Dense
-            Matching Across Modalities},
+            Correspondence Across Modalities},
   author = {Kwon, Hyeokjoon and Cai, Jiting and
             Li, Ruogu and Bhandari, Kritan and
             Hemkumar, Geethika and Maheshwari, Parv and
