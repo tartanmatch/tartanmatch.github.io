@@ -23,12 +23,18 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 ## Page content
 
 - A title background with eight same-modal and cross-modal matching examples, labeled source and target inputs, and both warp directions. The full abstract follows the title section.
-- A 5 × 5 modality matrix with larger selection cells, matching colors for modality labels and markers, and animations for all 25 ordered pairs.
+- A 5 × 5 modality matrix with larger selection cells, colored sensor markers, and animations for all 25 ordered pairs.
 - Real-world DSERT-RoLL comparisons across six pairs, showing MINIMA, MatchAnything, and TartanMatch with synchronized replay.
 - An expandable architecture figure, modality representations, two-stage training, and the training data mixture.
 - Cross-modal, same-modal, and relative-pose charts with exact values and baseline tables.
-- Summary metrics with labels above the values, an enlarged runtime comparison, and a copyable BibTeX citation.
+- Four concise Key results rows with links to demos, accuracy, joint training, and speed; the coverage row has no duplicate modality grid.
+- Separate accuracy, joint-training, and speed results. The joint-training chart shows all 15 pairs from Table VII without an additional table.
+- A copyable BibTeX citation.
 - Dark and light themes, responsive layouts, keyboard navigation, and reduced-motion support.
+
+## Visual design
+
+The main design uses a blue brand accent, with matching title and wordmark colors. Interface text is white in dark mode and black in light mode, except for the blue brand lettering. Font weight, borders, and chart marks provide emphasis. The light theme uses a pale overlay on the title video so black text remains readable.
 
 ## Project files
 

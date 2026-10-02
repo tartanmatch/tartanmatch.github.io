@@ -72,7 +72,7 @@ const modalities = [
   {id:'lidar', label:'LiDAR', color:'var(--mod-lidar)'}
 ];
 const matrix = $('#pair-matrix');
-matrix.innerHTML = '<span aria-hidden="true"></span>' + modalities.map(m => `<span class="matrix-label" style="color:${m.color}">${m.label}</span>`).join('') + modalities.map((source, r) => `<span class="matrix-label row-label" style="color:${source.color}">${source.label}</span>` + modalities.map((target, c) => `<button class="pair-cell" style="--from:${source.color};--to:${target.color}" data-source="${source.id}" data-target="${target.id}" data-index="${r*5+c}" aria-label="${source.label} to ${target.label}" aria-pressed="${r===0&&c===1}" title="${source.label} → ${target.label}"><i aria-hidden="true"></i><span aria-hidden="true">→</span><i aria-hidden="true"></i></button>`).join('')).join('');
+matrix.innerHTML = '<span aria-hidden="true"></span>' + modalities.map(m => `<span class="matrix-label">${m.label}</span>`).join('') + modalities.map((source, r) => `<span class="matrix-label row-label">${source.label}</span>` + modalities.map((target, c) => `<button class="pair-cell" style="--from:${source.color};--to:${target.color}" data-source="${source.id}" data-target="${target.id}" data-index="${r*5+c}" aria-label="${source.label} to ${target.label}" aria-pressed="${r===0&&c===1}" title="${source.label} → ${target.label}"><i aria-hidden="true"></i><span aria-hidden="true">→</span><i aria-hidden="true"></i></button>`).join('')).join('');
 function selectPair(button) {
   $$('.pair-cell').forEach(cell => cell.setAttribute('aria-pressed', String(cell===button)));
   const {source, target, index} = button.dataset;
@@ -199,6 +199,50 @@ function renderResults(kind) {
 }
 setupTabs('[data-result-tab]',button=>renderResults(button.dataset.resultTab));
 renderResults('cross');
+
+
+// Table VII: pair-specific and joint training on TartanAir V2 validation.
+const jointRows = [
+  ['rgb', 'rgb', 0.82, 1.00, -22.0], ['depth', 'depth', 0.73, 0.90, -23.3], ['event', 'event', 1.29, 1.22, 5.4], ['thermal', 'thermal', 3.14, 3.24, -3.2], ['lidar', 'lidar', 7.84, 5.00, 36.2],
+  ['rgb', 'depth', 3.16, 2.89, 8.5], ['rgb', 'event', 2.66, 1.69, 36.5], ['rgb', 'thermal', 2.28, 2.34, -2.6], ['rgb', 'lidar', 8.78, 6.01, 31.6], ['depth', 'event', 3.12, 1.85, 40.7],
+  ['depth', 'thermal', 5.93, 5.04, 15.0], ['depth', 'lidar', 4.85, 3.19, 34.2], ['event', 'thermal', 5.29, 3.85, 27.2], ['event', 'lidar', 14.20, 5.47, 61.5], ['thermal', 'lidar', 13.02, 9.37, 28.0]
+].sort((a, b) => b[2] - a[2]);
+const modLabel = id => modalities.find(m => m.id === id).label;
+function renderJointResults() {
+  const scale = 15;
+  const pos = value => `${value / scale * 100}%`;
+  const ticks = [0, 5, 10, 15].map(value => `<span style="left:${pos(value)}">${value}</span>`).join('');
+  $('#joint-chart').innerHTML = `<div class="joint-row joint-axis" aria-hidden="true"><span>Error (px) ↓</span><div class="joint-ticks">${ticks}</div><span>Error change</span></div>` + jointRows.map(([source,target,single,joint,change]) => {
+    const better = change > 0;
+    return `<div class="joint-row" role="img" aria-label="${modLabel(source)} to ${modLabel(target)}: pair-specific ${single.toFixed(2)} pixels, joint ${joint.toFixed(2)} pixels, ${Math.abs(change).toFixed(1)}% ${better ? 'lower' : 'higher'} error.">
+      <div class="chart-row-label">${modLabel(source)} → ${modLabel(target)}<small>${source === target ? 'Same-modal' : 'Cross-modal'}</small></div>
+      <div class="joint-track" aria-hidden="true"><i class="joint-link" style="left:${pos(Math.min(single,joint))};width:${Math.abs(single-joint)/scale*100}%"></i><i class="joint-dot-single" style="left:${pos(single)}" title="Pair-specific: ${single.toFixed(2)} px"></i><i class="joint-dot-model" style="left:${pos(joint)}" title="Joint: ${joint.toFixed(2)} px"></i></div>
+      <div class="joint-change ${better ? 'better' : ''}" aria-hidden="true">${better ? '−' : '+'}${Math.abs(change).toFixed(1)}%</div>
+    </div>`;
+  }).join('');
+}
+function renderKeyResults() {
+  const average = values => values.reduce((sum,value) => sum+value,0)/values.length;
+  const accuracy = ['cross','same'].map(kind => [kind === 'cross' ? 'Cross-modal' : 'Same-modal',average(resultSets[kind].rows.map(row=>row[2])),average(resultSets[kind].rows.map(row=>row[3]))]);
+  const training = [false,true].map(same => {
+    const rows = jointRows.filter(row=>(row[0]===row[1])===same);
+    return [same ? 'Same-modal' : 'Cross-modal',average(rows.map(row=>row[3])),average(rows.map(row=>row[2]))];
+  });
+  function drawSummary(selector,rows,oursLabel,baselineLabel) {
+    const max = Math.max(...rows.flatMap(row=>row.slice(1)));
+    $(selector).innerHTML = rows.map(([label,ours,baseline])=>`<div class="summary-group" role="img" aria-label="${label}: ${oursLabel} ${ours.toFixed(2)} pixels, ${baselineLabel} ${baseline.toFixed(2)} pixels."><p>${label}</p><div class="summary-bar" aria-hidden="true"><i class="ours" style="--width:${ours/max*100}%"></i><b>${ours.toFixed(2)}</b></div><div class="summary-bar" aria-hidden="true"><i style="--width:${baseline/max*100}%"></i><span>${baseline.toFixed(2)}</span></div></div>`).join('');
+  }
+  drawSummary('#key-accuracy-chart',accuracy,'TartanMatch','best other method');
+  drawSummary('#key-joint-chart',training,'joint model','one model per pair');
+  const runtimes = [['TartanMatch',27.8],['UFM',27.6],['MatchAnything (RoMa)',206.4],['MINIMA (RoMa)',262.4]];
+  function drawSpeed(selector,rows) {
+    $(selector).innerHTML = rows.map(([name,time])=>`<div class="speed-row ${name==='TartanMatch'?'ours':''}"><span>${name}</span><b>${time.toFixed(1)}</b><i style="--width:${time/262.4*100}%" aria-hidden="true"></i></div>`).join('');
+  }
+  drawSpeed('#key-speed-chart',runtimes.filter(row=>row[0]!=='UFM'));
+  drawSpeed('#speed-chart',runtimes);
+}
+renderJointResults();
+renderKeyResults();
 
 const dialog=$('#image-dialog');
 $$('[data-zoom]').forEach(button=>button.addEventListener('click',()=>{
