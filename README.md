@@ -24,17 +24,19 @@ When working on a remote machine over SSH, forward port 3000 to your computer us
 
 - A title background with eight same-modal and cross-modal matching examples, labeled source and target inputs, and both warp directions. The full abstract follows the title section.
 - A 5 × 5 modality matrix with larger selection cells, colored sensor markers, and animations for all 25 ordered pairs.
-- Real-world DSERT-RoLL comparisons across six pairs, showing MINIMA, MatchAnything, and TartanMatch with synchronized replay.
+- Real-world DSERT-RoLL comparisons across six pairs, with shared source/target inputs and synchronized outputs from TartanMatch, MatchAnything, and MINIMA. Card tabs switch demos; visible radio buttons select each real-world pair.
 - An expandable architecture figure, modality representations, two-stage training, and the training data mixture.
 - Cross-modal, same-modal, and relative-pose charts with exact values and baseline tables.
-- Four concise Key results rows with links to demos, accuracy, joint training, and speed; the coverage row has no duplicate modality grid.
+- Four concise Key results rows after the demos, with links to accuracy, joint training, and speed; the coverage row has neither a link nor a duplicate modality grid.
 - Separate accuracy, joint-training, and speed results. The joint-training chart shows all 15 pairs from Table VII without an additional table.
 - A copyable BibTeX citation.
 - Dark and light themes, responsive layouts, keyboard navigation, and reduced-motion support.
 
 ## Visual design
 
-The main design uses a blue brand accent, with matching title and wordmark colors. Interface text is white in dark mode and black in light mode, except for the blue brand lettering. Font weight, borders, and chart marks provide emphasis. The light theme uses a pale overlay on the title video so black text remains readable.
+The selected palette uses teal for the Match lettering, primary buttons, active selections, links, and TartanMatch chart marks. Headings and body text are white in dark mode and black in light mode; other model bars use neutral gray. Demo modality names retain the same sensor colors as the matrix. Both title and citation wordmarks use a neutral Tartan and teal Match. The light theme uses a pale overlay on the title video.
+
+Method cards, training descriptions, epoch counts, dataset names, and chart pair labels use larger text for readability. The Method and Results headlines are smaller than the demo headline. Accuracy categories use compact card tabs with a visible selection indicator and keyboard navigation. Code remains marked Coming soon until a repository URL is confirmed.
 
 ## Project files
 
@@ -64,7 +66,9 @@ The `gh-pages` branch contains only the built website and a `.nojekyll` file. In
 
 Live website: https://tartanmatch.github.io/.
 
-To update the site, run `npm run build`, copy the contents of `dist/` into a checkout of `gh-pages`, preserve `.nojekyll`, then commit and push that branch.
+Preview changes locally first. Push and publish only after the owner explicitly approves the current version.
+
+After approval, run `npm run build`, copy the contents of `dist/` into a checkout of `gh-pages`, preserve `.nojekyll`, then commit and push that branch.
 
 The repository is public. GitHub Pages publishes the root of `gh-pages` over HTTPS.
 
@@ -85,7 +89,7 @@ Asset extraction requires Python 3.11 and `Pillow`, `pymupdf`, and `imageio-ffmp
 ## Warp directions and interpretation
 
 - The full paper abstract precedes the interactive 25-pair and real-world demonstrations.
-- The 25-pair and real-world videos preserve all three original panels: a fixed source on the left, a changing target in the middle, and the source warped into the current target view on the right. Captions direct viewers to compare panel 3 with panel 2.
+- The 25-pair explorer preserves the original three panels: a fixed source on the left, a changing target in the middle, and the source warped into the current target view on the right. The real-world comparison crops those clips to show two shared inputs and three method outputs. A shared 10 fps clock keeps all five panels on the same frame, with one playback control.
 - On slide 82 of `tartanmatch_pre_final (4) (1).pptx`, retinal inputs are `image98` and `image99`; `image101` is target → source, and `image100` is source → target. Satellite inputs are `image102` and `image103`; `image104` is target → source, and `image105` is source → target. These supplementary assets are retained in `assets/` but are not displayed on the current page.
 - Animations of fixed image pairs transition from the original image to the predicted alignment; they are distinct from videos with a changing target view. Title-background posters show the final alignment for the static fallback and reduced-motion mode.
 - The header and footer use the TartanMatch wordmark.
@@ -100,4 +104,4 @@ The background uses eight matching groups from slides 1, 81, and 82 of `tartanma
 - Desktop video: 1920 × 960, arranged in four columns and two rows. Mobile video: 900 × 1800, arranged in two columns and four rows. Both loop silently for 12 seconds.
 - `scripts/prepare_hero_video.py` reads the finalized presentation and generates the videos and final-alignment posters. `assets/hero-media-sources.json` records the mapping between each group and the original slide media.
 - Author names use 18 px text on desktop and 14 px on mobile. The affiliation appears below the contribution notes, at 18 px on desktop and 16 px on mobile.
-- Background playback pauses automatically offscreen and uses a static poster for reduced-motion preferences. Demo videos retain their native playback controls.
+- Background playback pauses automatically offscreen and uses a static poster for reduced-motion preferences. The 25-pair videos retain native playback controls; real-world comparisons use a shared play/pause control.
