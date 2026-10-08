@@ -1,6 +1,6 @@
 # TartanMatch Project Website
 
-Static project website for **TartanMatch: Towards Universal Dense Matching Across Modalities**, with a visual style inspired by the MAC-I² project page. The site uses figures and animations from the paper and presentation slides, with no third-party runtime dependencies.
+Static project website for **TartanMatch: Towards Universal Dense Correspondence Across Modalities**, with a visual style inspired by the MAC-I² project page. The site uses figures and animations from the paper and presentation slides, with no third-party runtime dependencies.
 
 ## Local preview
 
