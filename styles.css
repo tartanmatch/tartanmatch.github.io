@@ -41,7 +41,7 @@
 @media(max-width:1100px){.hero .authors{font-size:16px}.hero .hero-affiliation{font-size:17px}}
 @media(max-width:760px){.hero .authors{font-size:14px;line-height:1.7;margin-top:20px}.hero .author-note{font-size:10px;margin-top:9px}.hero .hero-affiliation{font-size:16px;max-width:340px;margin-top:11px}.hero-content{padding-top:80px}}
 
-.hero .author-name{white-space:nowrap;color:var(--accent);text-underline-offset:4px;text-decoration-thickness:1px}
+.hero .author-name{white-space:nowrap;color:var(--text);text-underline-offset:4px;text-decoration-thickness:1px}
 .hero .author-name:hover,.hero .author-name:focus-visible{text-decoration:underline}
 
 /* Full paper abstract opens the first content section. */
